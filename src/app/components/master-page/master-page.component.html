@@ -1,0 +1,72 @@
+<header class="header">
+  <nav class="navbar-header-primary-container">
+    <mat-toolbar class="navbar navbar-primary mat-elevation-z10" color="primary">
+      <div>
+        <a class="hamburger icon-pr" (click)="sidenav.toggle()" fxFlex fxLayout>
+          <mat-icon>menu</mat-icon>
+        </a>
+      </div>
+      <a href="/" class="archor-logo" fxFlex fxLayout>
+        <img src="assets/logo.svg" alt="" height="30px" style="padding-right: 10px;">
+        Norris Api
+      </a>
+      <!-- <div fxHide.lt-md fxFlex fxLayout fxLayoutAlign="flex-end" style="cursor: context-menu;">API Documentation</div> -->
+      <div fxFlex fxLayout fxLayoutAlign="flex-end">
+        <ul fxLayout fxLayoutGap="10px" class="navigation-items">
+          <li>
+            <button fxHide.lt-md mat-button [matMenuTriggerFor]="versionmenu" matTooltip="Choose version">
+              <mat-icon>more_vert</mat-icon>
+              <span>Version
+                <small>({{currentVersion.name}})</small>
+              </span>
+            </button>
+
+            <button matTooltip="Select version" fxHide.gt-sm mat-icon-button [matMenuTriggerFor]="versionmenu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #versionmenu="matMenu">
+              <button mat-menu-item *ngFor="let version of versions" (click)="selectVersion(version)">
+                {{version.name}}
+              </button>
+            </mat-menu>
+          </li>
+        </ul>
+      </div>
+    </mat-toolbar>
+  </nav>
+</header>
+
+<section class="middle">
+  <mat-drawer-container class="container">
+    <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isScreenSmall()" [mode]="isScreenSmall() ? 'over' : 'side'">
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let i of currentVersion.nodes" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{i.name}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-nav-list>
+            <mat-list-item *ngFor="let j of i.nodes">
+              <a matLine (click)="selectNodeById(j.id); isScreenSmall()? sidenav.close():null;">
+                <mat-icon></mat-icon> {{j.name}}
+              </a>
+            </mat-list-item>
+          </mat-nav-list>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </mat-drawer>
+    <mat-drawer-content>
+      <main class="content">
+        <mat-tab-group (selectedTabChange)="selectNodeDocument($event.index)">
+          <mat-tab *ngFor="let item of selectedNode.documents" [label]="humanizeFileName(item)">
+            <app-main-content [currentPath]="selectedNode.path(selectedDocument)"></app-main-content>
+          </mat-tab>
+        </mat-tab-group>
+      </main>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</section>
+
+<footer class="footer">
+</footer>

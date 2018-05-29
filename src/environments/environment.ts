@@ -1,15 +1,53 @@
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  defaultStaticContent:  {version: 'v1'},
+  documentationRoot: 'markdown',
+  versions: [
+    {
+      name: 'v1',
+      id: 'v1',
+      documents: ['Introduction.md', 'Getting_Started.md'],
+      nodes: [
+        {
+          name: 'API_Endpoint_Reference',
+          nodes: [
+            {name: 'Dictionaries', documents: ['Overview.md', 'Album.md', 'Albums.md']},
+            {name: 'Policies', documents: ['Overview.md', 'POST_Policy.md']},
+            {name: 'Quotes', documents: ['Overview.md', 'POST_Quote.md']},
+          ]
+        },
+        {
+          name: 'Guides',
+          nodes: [
+            {name: 'Authorization', documents: ['authorization.md']},
+            {name: 'Configuration & Implementation', documents: ['configuration.md', 'implementation.md']},
+          ]
+        },
+      ]
+    },
+    {
+      name: 'v2',
+      id: 'v2',
+      documents: ['Getting_Started.md'],
+      nodes: [
+        {
+          name: 'API',
+          nodes: [
+            {name: 'Products', documents: ['product.md']},
+            {name: 'Users', documents: ['user.md']},
+            {name: 'Products', documents: ['product.md']},
+            {name: 'Users', documents: ['user.md']},
+          ]
+        },
+        {
+          name: 'Guides',
+          nodes: [
+            {name: 'Authorization', documents: ['authorization.md']},
+            {name: 'Configuration & Implementation', documents: ['configuration.md', 'implementation.md']},
+          ]
+        },
+      ]
+    },
+  ]
 };
-
-/*
- * In development mode, to ignore zone related error stack frames such as
- * `zone.run`, `zoneDelegate.invokeTask` for easier debugging, you can
- * import the following file, but please comment it out in production mode
- * because it will have performance impact when throw error
- */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.

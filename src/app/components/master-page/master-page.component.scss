@@ -1,0 +1,83 @@
+$navbar-primary-height: 64px;
+$footer-height: 64px;
+$sidenav-width:350px;
+
+
+
+// css - Structure
+header.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+section.middle {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: $navbar-primary-height;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.left-sidebar {
+  flex: 1;
+}
+main.content {
+   padding: 18px 40px;
+}
+
+
+mat-drawer-container, mat-drawer-content, mat-drawer {
+  height:  100%;
+}
+
+// nav.navbar-header-primary-container {}
+// nav.navbar-header-secondary-container {}
+
+// footer.footer {}
+// .navbar-navbar-primary {}
+// .navbar-navbar-secondary {}
+// .navbar {}
+// .container {}
+
+// css - Design
+.navigation-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.hamburger {
+  cursor: pointer;
+  color:#e78200;
+  :hover {
+    color: lightgrey;
+
+  }
+}
+.icon-pr {
+  display: inline-block;
+  padding-right:20px;
+}
+.capitalize {
+  text-transform: capitalize;
+}
+
+
+.archor-logo {
+  text-decoration: none;
+  color: #e78200;
+}
+
+
+
+
+
+
+
+
+
+
+
+
