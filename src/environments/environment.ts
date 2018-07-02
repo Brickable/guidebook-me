@@ -1,50 +1,47 @@
 
 export const environment = {
   production: false,
-  defaultStaticContent:  {version: 'v1'},
+  defaultStaticContent:  {version: 'Version_1'},
   documentationRoot: 'markdown',
   versions: [
     {
-      name: 'v1',
-      id: 'v1',
+      name: 'Version_1',
+      id: 'Version_1',
       documents: ['Introduction.md', 'Getting_Started.md'],
       nodes: [
         {
           name: 'API_Endpoint_Reference',
           nodes: [
-            {name: 'Dictionaries', documents: ['Overview.md', 'Album.md', 'Albums.md']},
-            {name: 'Policies', documents: ['Overview.md', 'POST_Policy.md']},
-            {name: 'Quotes', documents: ['Overview.md', 'POST_Quote.md']},
+            {name: 'Albums', documents: ['Overview.md', 'Album.md', 'Albums.md']},
+            {name: 'Artists', documents: ['Overview.md', 'Artist.md', 'Artists.md']}
           ]
         },
         {
           name: 'Guides',
           nodes: [
             {name: 'Authorization', documents: ['authorization.md']},
-            {name: 'Configuration & Implementation', documents: ['configuration.md', 'implementation.md']},
+            {name: 'Configuration_&_Implementation', documents: ['configuration.md', 'implementation.md']},
           ]
         },
       ]
     },
     {
-      name: 'v2',
-      id: 'v2',
-      documents: ['Getting_Started.md'],
+      name: 'Version_2',
+      id: 'Version_2',
+      documents: ['Introduction.md', 'Getting_Started.md'],
       nodes: [
         {
-          name: 'API',
+          name: 'API_Endpoint_Reference',
           nodes: [
-            {name: 'Products', documents: ['product.md']},
-            {name: 'Users', documents: ['user.md']},
-            {name: 'Products', documents: ['product.md']},
-            {name: 'Users', documents: ['user.md']},
+            {name: 'Albums', documents: ['Overview.md', 'Album.md', 'Albums.md']},
+            {name: 'Artists', documents: ['Overview.md', 'Artist.md', 'Artists.md']}
           ]
         },
         {
           name: 'Guides',
           nodes: [
             {name: 'Authorization', documents: ['authorization.md']},
-            {name: 'Configuration & Implementation', documents: ['configuration.md', 'implementation.md']},
+            {name: 'Configuration_&_Implementation', documents: ['configuration.md', 'implementation.md']},
           ]
         },
       ]

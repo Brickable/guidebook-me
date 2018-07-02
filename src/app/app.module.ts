@@ -6,11 +6,11 @@ import { MaterialModule } from './common/material.module';
 import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
+
 import { AppComponent } from './app.component';
 import { MarkdownModule } from 'ngx-markdown';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { MainContentComponent } from './components/main-content/main-content.component';
-
 
 @NgModule({
   declarations: [
