@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { MarkdownModule } from 'ngx-markdown';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { MainContentComponent } from './components/main-content/main-content.component';
+import { HttpClientModule, HttpClient } from '../../node_modules/@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -23,10 +24,11 @@ import { MainContentComponent } from './components/main-content/main-content.com
     BrowserAnimationsModule,
     MaterialModule,
     FormsModule,
+    HttpClientModule,
     RouterModule.forRoot([
       { path: '**', component: MainContentComponent},
     ]),
-    MarkdownModule.forRoot(),
+    MarkdownModule.forRoot({ loader: HttpClient }),
     FlexLayoutModule
   ],
   providers: [],
