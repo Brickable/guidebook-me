@@ -1,11 +1,12 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '../../../node_modules/@angular/common/http';
 
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators/';
-import 'rxjs/add/observable/throw';
+import { Observable, of, throwError } from 'rxjs';
+import { map, mergeMap, catchError } from 'rxjs/operators/';
 
 import { environment } from '../../environments/environment';
+import { TreeNode } from '../models/TreeNode';
 
 @Injectable({
   providedIn: 'root'
@@ -13,27 +14,53 @@ import { environment } from '../../environments/environment';
 export class RepoService {
   constructor(private http: HttpClient) {}
 
-  private getDocRepoSha(): Observable<string> {
+  private getSha(): Observable<string> {
     const serviceUrl = `${environment.repoUrl}/commits/${environment.branch}`;
-    return this.http.get<string>(serviceUrl);
+    return this.http.get<string>(serviceUrl).pipe(map(x => x.sha));
   }
 
-  async getRepoTree() {
-    const repoSha = await this.getDocRepoSha();
-    const serviceUrl = `${environment.repoUrl}/git/trees/${repoSha}?recursive=1`;
-    return this.http.get(serviceUrl).pipe(
-      map(response => {
-        console.log(response);
-      })
+  private getTree() {
+    return this.getSha().pipe(
+      mergeMap(repoSha =>  this.http.get(`${environment.repoUrl}/git/trees/${repoSha}?recursive=1`)),
+      map(repo => repo.tree),
+      catchError(error =>  throwError(error))
     );
   }
 
-  async getConfigs() {
-    const tree = []; // await this.getRepoTree().tree;
-    const configFile = tree.find(x => x.path === 'config.json');
-    const encoded = await this.http.get(configFile.url);
-    const configObj = JSON.parse(atob(encoded.content));
-    return;
+  private getHierarchizedRawTree(flatTree: TreeNode[]) {
+    let folders = flatTree.filter(x => x.isFolder);
+    folders.forEach(folder => {
+      const subTree = flatTree.filter(x => (x.pathLevels === folder.pathLevels + 1) && x.path.includes(folder.path));
+      folder.nodes = subTree;
+    });
+    return folders.find(x => x.pathLevels === 1);
+  }
+
+
+//  PUBLIC SERVICES
+  getDocumentationTree() {
+    return this.getTree().pipe(
+      map(rawFlatTree => {
+        const flatTree = rawFlatTree.filter(x => x.path.startsWith(environment.markdownRoot))
+          .map(x => {
+            return new TreeNode(x.path, x.type, x.sha, x.url);
+          });
+        return this.getHierarchizedRawTree(flatTree);
+      }),
+      catchError(error => throwError(error))
+    );
+  }
+
+  getConfigs() {
+    return this.getSha().pipe(
+      mergeMap(repoSha => this.getTree()),
+      mergeMap(tree => {
+        const configFile = tree.find(x => x.path === 'config.json');
+        return  this.http.get(configFile.url);
+      }),
+      map(file => JSON.parse(atob(file.content))),
+      catchError(error =>  throwError(error))
+    );
   }
 
   // public handleError(error: Response) {

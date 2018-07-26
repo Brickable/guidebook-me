@@ -13,10 +13,10 @@ export class DocumentationNode {
     }
     this.resoursePath = (resoursePath) ? resoursePath : `${resoursePath}/${name}`;
     this.nodes = this.methodifyDocumentationNode(nodes, this.resoursePath);
-    // this.resoursePath = (resoursePath) ? `${resoursePath}/${name}` : name;
+    //// this.resoursePath = (resoursePath) ? `${resoursePath}/${name}` : name;
   }
   path(index= 0): string {
-    return `${environment.documentationRoot}${this.resoursePath}/${this.documents[index]}`;
+    return ''; // `${environment.documentationRoot}${this.resoursePath}/${this.documents[index]}`;
   }
 
   methodifyDocumentationNode(rawTree: DocumentationNode[], previousRoute: string): DocumentationNode[] {
