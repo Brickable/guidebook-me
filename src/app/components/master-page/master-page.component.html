@@ -36,11 +36,14 @@
   </nav>
 </header>
 
-<section class="middle">
+<section class="middle" *ngIf="currentNode">
   <mat-drawer-container class="container">
     <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isScreenSmall()" [mode]="isScreenSmall() ? 'over' : 'side'">
       <mat-accordion>
-        <mat-expansion-panel *ngFor="let i of currentVersion.nodes" (opened)="isSidePanelOpen = true" (closed)="isSidePanelOpen = false">
+          <folder-tree [items]="currentTreeView"></folder-tree>
+
+
+        <!-- <mat-expansion-panel *ngFor="let i of currentVersion.nodes" (opened)="isSidePanelOpen = true" (closed)="isSidePanelOpen = false">
           <mat-expansion-panel-header>
             <mat-panel-title>
               {{i.name}}
@@ -53,14 +56,14 @@
               </a>
             </mat-list-item>
           </mat-nav-list>
-        </mat-expansion-panel>
+        </mat-expansion-panel> -->
       </mat-accordion>
     </mat-drawer>
     <mat-drawer-content>
       <!-- <main class="content">
         <mat-tab-group (selectedTabChange)="onSelectingTab($event.index)">
           <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="item.name">
-            <app-main-content [currentPath]="currentNode.path(selectedDocument)"></app-main-content>
+            <main-content [currentPath]="currentNode.path(selectedDocument)"></main-content>
           </mat-tab>
         </mat-tab-group>
       </main> -->

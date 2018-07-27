@@ -16,7 +16,7 @@ export class RepoService {
 
   private getSha(): Observable<string> {
     const serviceUrl = `${environment.repoUrl}/commits/${environment.branch}`;
-    return this.http.get<string>(serviceUrl).pipe(map(x => x.sha));
+    return this.http.get(serviceUrl).pipe(map(x => x.sha));
   }
 
   private getTree() {

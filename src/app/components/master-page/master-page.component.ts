@@ -24,7 +24,7 @@ import { TreeNode } from '../../models/TreeNode';
 const SMALL_WIDTH_BREAKPOINT = 959;
 
 @Component({
-  selector: 'app-master-page',
+  selector: 'master-page',
   templateUrl: './master-page.component.html',
   styleUrls: ['./master-page.component.scss']
 })
@@ -40,21 +40,14 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   currentVersion: TreeNode;
   currentNode: TreeNode;
+  currentTreeView: TreeNode[];
+
   showVersionOptions: boolean;
   showLanguageOptions: boolean;
-  isSidePanelOpen = false;
+  // isSidePanelOpen = false;
   versionOptions: OptionList = new OptionList();
   languageOptions: OptionList = new OptionList();
   tabIndex: number;
-
-
-
-  // selectedNode: DocumentationNode;
-  // selectedDocument: number;
-  // currentVersion: DocumentationNode;
-  // versions: DocumentationNode[] = [];
-
-
 
   constructor(
     private repoService: RepoService,
@@ -82,11 +75,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       this.setVersionOptions();
       this.setLanguageOptions();
       this.setCurrentVersion();
-      console.log(this.currentVersion);
-      console.log(this.currentNode);
-      console.log(this.getCurrentNodeDocuments);
-
-
     });
     // this.versions =  environment.versions.map(x => new DocumentationNode(x.name, '', x.id, x.documents, x.nodes as DocumentationNode[]));
     // this.selectVersion(this.versions.find(x => x.id === environment.defaultStaticContent.version));
@@ -156,7 +144,11 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         path = `${environment.markdownRoot}/${this.versionOptions.selected}/${this.languageOptions.selected}`;
     }
     this.currentVersion = this.findNode(this.tree, path);
-    this.currentNode()
+    this.currentNode = this.currentVersion;
+    this.currentTreeView = this.getTreeView(this.currentVersion);
+    console.log(this.currentVersion);
+    console.log(this.currentNode);
+    console.log(this.currentTreeView);
   }
 
   private findNode(node: TreeNode, path: string): TreeNode | null {
@@ -176,8 +168,14 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     return null;
   }
 
-
-
+  private getTreeView(node: TreeNode) {
+    let treeView: TreeNode[] = [];
+    treeView = node.folders;
+    treeView.forEach(element => {
+      element.nodes = this.getTreeView(element);
+    });
+    return treeView;
+  }
 
   // selectVersion(node: DocumentationNode): void {
   //   this.currentVersion = this.versions.find(x => x.id === node.id);

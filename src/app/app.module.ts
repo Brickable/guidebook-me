@@ -11,14 +11,17 @@ import { AppComponent } from './app.component';
 import { MarkdownModule } from 'ngx-markdown';
 import { MasterPageComponent } from './components/master-page/master-page.component';
 import { MainContentComponent } from './components/main-content/main-content.component';
+import { FolderTreeComponent } from './components/folder-tree/folder-tree.component';
 import { HttpClientModule, HttpClient } from '../../node_modules/@angular/common/http';
 import { RepoService } from './services/repo.service';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     MasterPageComponent,
-    MainContentComponent
+    MainContentComponent,
+    FolderTreeComponent
   ],
   imports: [
     BrowserModule,

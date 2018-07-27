@@ -1,0 +1,16 @@
+<mat-accordion>
+  <div *ngFor="let i of folders">
+    <mat-expansion-panel (opened)="isSidePanelOpen = true" (closed)="isSidePanelOpen = false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{i.name}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <folder-tree [items]="i.folders"></folder-tree>
+    </mat-expansion-panel>
+  </div>
+  <div *ngFor="let i of links">
+      <a *ngIf="!i.folders.length" >{{i.name}}</a>
+  </div>
+
+</mat-accordion>

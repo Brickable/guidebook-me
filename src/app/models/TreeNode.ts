@@ -13,7 +13,7 @@ export class TreeNode {
    name: string;
    splitPath: string[];
    pathLevels: Number;
-   nodes?: TreeNode[];
+   nodes: TreeNode[] = [];
 
 
    get isFile(): boolean {
@@ -23,10 +23,10 @@ export class TreeNode {
     return (this.type === 'tree');
    }
    get folders() {
-     return this.isFolder ? this.nodes.filter(x => x.isFolder) : null;
+     return this.isFolder ? this.nodes.filter(x => x.isFolder) : [];
    }
    get files() {
-    return this.isFolder ? this.nodes.filter(x => x.isFile) : null;
+    return this.isFolder ? this.nodes.filter(x => x.isFile) : [];
    }
 
 }
