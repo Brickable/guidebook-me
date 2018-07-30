@@ -35,6 +35,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   @ViewChild(MatSidenav) sidenav: MatSidenav;
   config: Config;
   private siteContent$;
+  private repoServiceSubscription;
   private tree: TreeNode;
 
   currentVersion: TreeNode;
@@ -68,7 +69,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         return { configFile, tree };
       }
     );
-    this.siteContent$.subscribe(response => {
+    this.repoServiceSubscription = this.siteContent$.subscribe(response => {
       this.setConfig(response.configFile.defaultStaticContent);
       this.setMainTree(response.tree);
       this.setVersionOptions();
@@ -87,7 +88,8 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.siteContent$.unsubscribe();
+    console.log('destroy');
+    this.repoServiceSubscription.unsubscribe();
   }
 
   onSelectingVersion(value) {

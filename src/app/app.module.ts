@@ -30,7 +30,7 @@ import { RepoService } from './services/repo.service';
     FormsModule,
     HttpClientModule,
     RouterModule.forRoot([
-      { path: '**', component: MasterPageComponent},
+      { path: '**', component: MasterPageComponent}
     ]),
     MarkdownModule.forRoot({ loader: HttpClient }),
     FlexLayoutModule
