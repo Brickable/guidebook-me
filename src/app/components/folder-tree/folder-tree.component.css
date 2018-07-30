@@ -1,3 +1,20 @@
 /* .mat-expanded {
   background-color:lightgrey;
 } */
+
+.spacer {
+  margin: 20px;
+}
+
+.mat-icon {
+  font-size: 14px;
+
+}
+.folder-link {
+  text-decoration: none;
+}
+
+.file-link {
+  text-decoration: none;
+}
+

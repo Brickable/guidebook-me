@@ -41,32 +41,16 @@
     <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isScreenSmall()" [mode]="isScreenSmall() ? 'over' : 'side'">
       <mat-accordion>
           <folder-tree [items]="currentTreeView"></folder-tree>
-
-
-        <!-- <mat-expansion-panel *ngFor="let i of currentVersion.nodes" (opened)="isSidePanelOpen = true" (closed)="isSidePanelOpen = false">
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-              {{i.name}}
-            </mat-panel-title>
-          </mat-expansion-panel-header>
-          <mat-nav-list>
-            <mat-list-item *ngFor="let j of i.nodes">
-              <a matLine (click)="onSelectingPath(j.path); isScreenSmall()? sidenav.close():null;">
-                <mat-icon></mat-icon> {{j.name}}
-              </a>
-            </mat-list-item>
-          </mat-nav-list>
-        </mat-expansion-panel> -->
       </mat-accordion>
     </mat-drawer>
     <mat-drawer-content>
-      <!-- <main class="content">
+      <main class="content">
         <mat-tab-group (selectedTabChange)="onSelectingTab($event.index)">
           <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="item.name">
-            <main-content [currentPath]="currentNode.path(selectedDocument)"></main-content>
+            <!-- <main-content [currentPath]="currentNode.path(selectedDocument)"></main-content> -->
           </mat-tab>
         </mat-tab-group>
-      </main> -->
+      </main>
     </mat-drawer-content>
   </mat-drawer-container>
 </section>

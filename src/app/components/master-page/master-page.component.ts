@@ -15,7 +15,6 @@ import {
 import { forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatSidenav } from '@angular/material';
-import { DocumentationNode } from '../../models/documentation-node';
 import { RepoService } from '../../services/repo.service';
 import { Config } from '../../models/Config';
 import { OptionItem } from '../../models/OptionItem';
@@ -27,15 +26,15 @@ const SMALL_WIDTH_BREAKPOINT = 959;
   selector: 'master-page',
   templateUrl: './master-page.component.html',
   styleUrls: ['./master-page.component.scss']
+
 })
 export class MasterPageComponent implements OnInit, OnDestroy {
   private mediaMatcher: MediaQueryList = matchMedia(
     `(max-width: ${SMALL_WIDTH_BREAKPOINT}px)`
   );
   @ViewChild(MatSidenav) sidenav: MatSidenav;
-
+  config: Config;
   private siteContent$;
-  private config: Config;
   private tree: TreeNode;
 
   currentVersion: TreeNode;
@@ -54,12 +53,14 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     private router: Router,
     zone: NgZone,
     ) {
+      // console.log(this.route.snapshot.firstChild.url[0].path)
     this.mediaMatcher.addListener(mql =>
       zone.run(() => (this.mediaMatcher = mql))
     );
   }
 
   ngOnInit() {
+    console.log('start');
     this.siteContent$ = forkJoin(
       this.repoService.getConfigs(),
       this.repoService.getDocumentationTree(),
@@ -68,14 +69,14 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       }
     );
     this.siteContent$.subscribe(response => {
-      this.config = response.configFile.defaultStaticContent;
-      this.tree = response.tree;
-      this.showVersionOptions = this.config.enableVersioning;
-      this.showLanguageOptions = this.config.enableMultiLanguage;
+      this.setConfig(response.configFile.defaultStaticContent);
+      this.setMainTree(response.tree);
       this.setVersionOptions();
       this.setLanguageOptions();
       this.setCurrentVersion();
     });
+
+
     // this.versions =  environment.versions.map(x => new DocumentationNode(x.name, '', x.id, x.documents, x.nodes as DocumentationNode[]));
     // this.selectVersion(this.versions.find(x => x.id === environment.defaultStaticContent.version));
     this.router.events.subscribe(() => {
@@ -103,6 +104,16 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   onSelectingTab(index = 0): void {
     this.tabIndex = index;
+  }
+
+  private setConfig(config: Config) {
+    this.config = config;
+    this.showVersionOptions = config.enableVersioning;
+    this.showLanguageOptions = config.enableMultiLanguage;
+  }
+
+  private setMainTree(tree: TreeNode) {
+    this.tree = tree;
   }
 
   private setVersionOptions() {
@@ -173,6 +184,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     treeView = node.folders;
     treeView.forEach(element => {
       element.nodes = this.getTreeView(element);
+      element.generateRelativeLinks(this.config.enableVersioning, this.config.enableMultiLanguage);
     });
     return treeView;
   }
@@ -202,5 +214,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     text = (isPath) ? text.substring(0, text.lastIndexOf('.')) : text;
     return text.split('_').join(' ');
   }
+
 
 }

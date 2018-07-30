@@ -1,3 +1,4 @@
+
 export class TreeNode {
   constructor(
     public path: string,
@@ -14,6 +15,8 @@ export class TreeNode {
    splitPath: string[];
    pathLevels: Number;
    nodes: TreeNode[] = [];
+   relativeLink: string;
+   relativeBackLink: string;
 
 
    get isFile(): boolean {
@@ -29,4 +32,24 @@ export class TreeNode {
     return this.isFolder ? this.nodes.filter(x => x.isFile) : [];
    }
 
+  generateRelativeLinks(versionEnabled = false, languageEnabled = false) {
+    let level = 1;
+    let rLink = '';
+    if (versionEnabled) {
+     level++;
+    }
+    if (languageEnabled) {
+      level++;
+    }
+
+    this.splitPath.forEach(
+      (el, index) => {
+        if (index >= level) {
+          rLink = rLink + '/' + el;
+        }
+      }
+    );
+    this.relativeLink = rLink;
+    this.relativeBackLink = rLink.substring(0, rLink.lastIndexOf('/'));
+  }
 }
