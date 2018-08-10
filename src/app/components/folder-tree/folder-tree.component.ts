@@ -20,9 +20,8 @@ export class FolderTreeComponent {
     return this.items.filter(x => !x.nodes.length);
   }
 
-  navigate(item: TreeNode, opened: boolean) {
-    this.isSidePanelOpen = opened;
-    const newRelativeLink = (opened) ? item.relativeLink : item.relativeBackLink;
-    this.router.navigate([newRelativeLink]);
+  navigate($event, item: TreeNode) {
+    $event.stopPropagation();
+    this.router.navigate([item.relativeLink + '/0']);
   }
 }

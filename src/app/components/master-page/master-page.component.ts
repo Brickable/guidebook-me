@@ -1,4 +1,4 @@
-import { Path } from './../../models/path';
+
 import { OptionList } from './../../models/OptionList';
 import { environment } from './../../../environments/environment';
 import {
@@ -7,13 +7,12 @@ import {
   OnDestroy,
   NgZone,
   ViewChild,
-  Output,
-  EventEmitter,
-  Version
+  OnChanges,
 } from '@angular/core';
 
 import { forkJoin } from 'rxjs';
-import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
+import { Router, NavigationEnd } from '@angular/router';
 import { MatSidenav } from '@angular/material';
 import { RepoService } from '../../services/repo.service';
 import { Config } from '../../models/Config';
@@ -35,46 +34,57 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   @ViewChild(MatSidenav) sidenav: MatSidenav;
   config: Config;
   private siteContent$;
+  private routerListener$;
   private repoServiceSubscription;
   private tree: TreeNode;
 
   currentVersion: TreeNode;
   currentNode: TreeNode;
   currentTreeView: TreeNode[];
+  currentDocumentContent: any;
 
   showVersionOptions: boolean;
   showLanguageOptions: boolean;
   // isSidePanelOpen = false;
   versionOptions: OptionList = new OptionList();
   languageOptions: OptionList = new OptionList();
-  tabIndex: number;
+  tabIndex = 0;
+  differ: any;
+
 
   constructor(
     private repoService: RepoService,
     private router: Router,
     zone: NgZone,
     ) {
-      // console.log(this.route.snapshot.firstChild.url[0].path)
     this.mediaMatcher.addListener(mql =>
       zone.run(() => (this.mediaMatcher = mql))
     );
   }
 
   ngOnInit() {
-    console.log('start');
     this.siteContent$ = forkJoin(
       this.repoService.getConfigs(),
-      this.repoService.getDocumentationTree(),
+      this.repoService.getTreeNodes(),
       (configFile, tree) => {
         return { configFile, tree };
       }
     );
+    this.routerListener$ = this.router.events.subscribe(
+      (e) => {
+        if (e instanceof NavigationEnd) {
+          this.setCurrentNode();
+        }
+      }
+    );
+
     this.repoServiceSubscription = this.siteContent$.subscribe(response => {
       this.setConfig(response.configFile.defaultStaticContent);
       this.setMainTree(response.tree);
       this.setVersionOptions();
       this.setLanguageOptions();
       this.setCurrentVersion();
+      this.selectingTab();
     });
 
 
@@ -88,7 +98,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('destroy');
     this.repoServiceSubscription.unsubscribe();
   }
 
@@ -96,16 +105,22 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.versionOptions.selected = value;
     this.setCurrentVersion();
   }
-  onSelectingPath(path: string) {
-    this.currentNode = this.findNode(this.currentVersion, path);
-    this.onSelectingTab();
-    this.router.navigate([this.currentNode.path]);
-  }
 
   // Commands
-
-  onSelectingTab(index = 0): void {
+  selectingTab(index = 0): void {
     this.tabIndex = index;
+    this.refreshCurrentDocument();
+    // this.router.navigate([`${this.currentNode.relativeLink}/${this.tabIndex}`]);
+  }
+  refreshCurrentDocument() {
+
+    console.log(this.currentNode.files[this.tabIndex].apiUrl);
+    const src =  this.repoService.getFile(
+      this.currentNode.files[this.tabIndex].apiUrl).pipe(take(1)
+    );
+    src.subscribe(res => {
+      this.currentDocumentContent = res;
+    });
   }
 
   private setConfig(config: Config) {
@@ -114,10 +129,18 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.showLanguageOptions = config.enableMultiLanguage;
   }
 
-  private setMainTree(tree: TreeNode) {
-    this.tree = tree;
+  private setMainTree(rawTree: TreeNode) {
+    rawTree.generateRelativeLinksRecursive(this.config.enableVersioning, this.config.enableMultiLanguage);
+    this.tree = rawTree;
   }
 
+  private setCurrentNode() {
+    let possibleTabIndex = Number(this.router.url.substring(this.router.url.lastIndexOf('/') + 1));
+    const path = this.router.url.substring(0, this.router.url.lastIndexOf('/'));
+    this.currentNode = this.findNode(this.currentVersion, path, true);
+    possibleTabIndex = isNaN(possibleTabIndex) ? 0 : possibleTabIndex;
+    this.selectingTab(possibleTabIndex);
+  }
   private setVersionOptions() {
     if (this.config.enableVersioning) {
       this.config.versions.forEach(element => {
@@ -158,20 +181,19 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
     this.currentVersion = this.findNode(this.tree, path);
     this.currentNode = this.currentVersion;
-    this.currentTreeView = this.getTreeView(this.currentVersion);
-    console.log(this.currentVersion);
-    console.log(this.currentNode);
-    console.log(this.currentTreeView);
+    console.log(this.tree.nodes[1].nodes[2].nodes[0].nodes);
+    this.currentTreeView = this.generateTreeView();
   }
 
-  private findNode(node: TreeNode, path: string): TreeNode | null {
-    if (node.path === path) {
+  private findNode(node: TreeNode, path: string, byRelativePath = false): TreeNode | null {
+    const pathToCompare = (byRelativePath) ? node.relativeLink : node.path;
+    if (pathToCompare === path) {
       return node;
     } else if (node.nodes) {
       let i;
       let result = null;
       for (i = 0; i < node.nodes.length; i++) {
-        result = this.findNode(node.nodes[i], path);
+        result = this.findNode(node.nodes[i], path, byRelativePath);
         if (result !== null) {
           return result;
         }
@@ -180,29 +202,17 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
     return null;
   }
-
-  private getTreeView(node: TreeNode) {
+  private generateTreeView(node: TreeNode = this.currentVersion): TreeNode[] {
     let treeView: TreeNode[] = [];
-    treeView = node.folders;
-    treeView.forEach(element => {
-      element.nodes = this.getTreeView(element);
-      element.generateRelativeLinks(this.config.enableVersioning, this.config.enableMultiLanguage);
+    node.folders.forEach(element => {
+      const item = new TreeNode(element.path, element.type, element.sha, element.apiUrl);
+      item.relativeLink = element.relativeLink;
+      item.nodes = this.generateTreeView(element);
+      treeView.push(item);
     });
     return treeView;
   }
 
-  // selectVersion(node: DocumentationNode): void {
-  //   this.currentVersion = this.versions.find(x => x.id === node.id);
-  //   this.selectNodeById(node.id);
-  // }
-  // selectNodeById(id: string): void {
-  //   this.selectedNode = this.searchTree(this.currentVersion, id);
-  //   this.selectNodeDocument();
-  //   this.router.navigate([this.selectedNode.resoursePath]);
-  // }
-  // selectNodeDocument(index = 0): void {
-  //   this.selectedDocument = index;
-  // }
   // Queries
   isScreenSmall(): boolean {
     return this.mediaMatcher.matches;
@@ -210,12 +220,13 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   get getCurrentNodeDocuments() {
     return this.currentNode.nodes.filter(x => x.isFile);
   }
+  get getURL() {
+    return this.router.url;
+  }
 
   // Helpers
   private spacingText(text: string, isPath = false): string {
     text = (isPath) ? text.substring(0, text.lastIndexOf('.')) : text;
     return text.split('_').join(' ');
   }
-
-
 }

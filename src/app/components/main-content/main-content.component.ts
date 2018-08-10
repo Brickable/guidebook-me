@@ -6,7 +6,7 @@ import { Component, OnInit, Input } from '@angular/core';
   styleUrls: ['./main-content.component.scss']
 })
 export class MainContentComponent implements OnInit {
-  @Input() currentPath: string;
+  @Input() currentMarkdown: string;
   constructor() {}
 
   ngOnInit() {}

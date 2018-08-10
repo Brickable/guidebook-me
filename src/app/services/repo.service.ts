@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '../../../node_modules/@angular/common/http';
 
 import { Observable, of, throwError } from 'rxjs';
-import { map, mergeMap, catchError } from 'rxjs/operators/';
+import { map, mergeMap, catchError } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { TreeNode } from '../models/TreeNode';
@@ -16,29 +16,28 @@ export class RepoService {
 
   private getSha(): Observable<string> {
     const serviceUrl = `${environment.repoUrl}/commits/${environment.branch}`;
-    return this.http.get(serviceUrl).pipe(map(x => x.sha));
+    return this.http.get(serviceUrl).pipe(map(x => x['sha']));
   }
 
   private getTree() {
     return this.getSha().pipe(
       mergeMap(repoSha =>  this.http.get(`${environment.repoUrl}/git/trees/${repoSha}?recursive=1`)),
-      map(repo => repo.tree),
+      map(repo => repo['tree']),
       catchError(error =>  throwError(error))
     );
   }
 
   private getHierarchizedRawTree(flatTree: TreeNode[]) {
-    let folders = flatTree.filter(x => x.isFolder);
-    folders.forEach(folder => {
-      const subTree = flatTree.filter(x => (x.pathLevels === folder.pathLevels + 1) && x.path.includes(folder.path));
-      folder.nodes = subTree;
+    flatTree.forEach(node => {
+      const subTree = flatTree.filter(x => (x.pathLevels === (node['pathLevels'] as number + 1)) && x.path.includes(node.path));
+      node.nodes = subTree;
     });
-    return folders.find(x => x.pathLevels === 1);
+    return flatTree.find(x => x.pathLevels === 1);
   }
 
 
 //  PUBLIC SERVICES
-  getDocumentationTree() {
+  getTreeNodes() {
     return this.getTree().pipe(
       map(rawFlatTree => {
         const flatTree = rawFlatTree.filter(x => x.path.startsWith(environment.markdownRoot))
@@ -58,8 +57,14 @@ export class RepoService {
         const configFile = tree.find(x => x.path === 'config.json');
         return  this.http.get(configFile.url);
       }),
-      map(file => JSON.parse(atob(file.content))),
+      map(file => JSON.parse(atob(file['content']))),
       catchError(error =>  throwError(error))
+    );
+  }
+
+  getFile(url: string) {
+    return this.http.get(url).pipe(
+      map(file => atob(file['content']))
     );
   }
 

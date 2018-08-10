@@ -1,6 +1,6 @@
-<mat-accordion>
+<mat-accordion *ngIf="items">
   <div *ngFor="let i of folders">
-      <mat-expansion-panel (opened)="navigate(i, true)" (closed)="navigate(i, false)" (click)="$event.stopPropagation()">
+      <mat-expansion-panel (opened)="isSidePanelOpen=true" (closed)="isSidePanelOpen=false" (click)="$event.stopPropagation()">
         <mat-expansion-panel-header>
           <mat-panel-title>
             {{i.name}}
@@ -13,7 +13,7 @@
   <div *ngIf="folders.length && links.length" class="spacer"></div>
 
   <div *ngFor="let i of links">
-    <a [routerLink]="[i.relativeLink]" class="file-link" (click)="$event.stopPropagation()">
+    <a [routerLink]="[i.relativeLink]" class="file-link" (click)="navigate($event, i)">
       <mat-icon>file_copy</mat-icon>
       <span>{{i.name}}</span>
     </a>

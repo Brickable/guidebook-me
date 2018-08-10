@@ -40,13 +40,15 @@
   <mat-drawer-container class="container">
     <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isScreenSmall()" [mode]="isScreenSmall() ? 'over' : 'side'">
       <mat-accordion>
-          <folder-tree [items]="currentTreeView"></folder-tree>
+          <folder-tree [items]="currentTreeView" [tabIndex]="tabIndex"></folder-tree>
       </mat-accordion>
     </mat-drawer>
     <mat-drawer-content>
       <main class="content">
-        <mat-tab-group (selectedTabChange)="onSelectingTab($event.index)">
+        <h1>{{ getURL }}</h1>
+        <mat-tab-group (selectedTabChange)="selectingTab($event.index)">
           <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="item.name">
+            <main-content [currentMarkdown]="currentDocumentContent" ></main-content>
             <!-- <main-content [currentPath]="currentNode.path(selectedDocument)"></main-content> -->
           </mat-tab>
         </mat-tab-group>
