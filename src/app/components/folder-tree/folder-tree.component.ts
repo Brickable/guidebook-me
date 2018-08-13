@@ -1,5 +1,5 @@
 import { TreeNode } from './../../models/TreeNode';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '../../../../node_modules/@angular/router';
 
 
@@ -11,7 +11,20 @@ import { Router } from '../../../../node_modules/@angular/router';
 export class FolderTreeComponent {
   constructor(private router: Router) {}
   @Input() items: TreeNode[] = [];
-  isSidePanelOpen = false;
+  @Input() treeLevel: Number;
+  @Input() baseRoot = '';
+
+  checkIfItemShouldBeOpen(iPath) {
+    const ar = this.router.url.substring(1).split('/');
+    ar.pop();
+    let path = this.baseRoot;
+    ar.forEach((x, i) => {
+      if (i >= this.treeLevel) {
+        path += `/${x}`;
+      }
+    });
+    return (path.includes(iPath));
+  }
 
   get folders() {
     return this.items.filter(x => x.nodes.length);
@@ -19,6 +32,8 @@ export class FolderTreeComponent {
   get links() {
     return this.items.filter(x => !x.nodes.length);
   }
+
+
 
   navigate($event, item: TreeNode) {
     $event.stopPropagation();

@@ -7,8 +7,8 @@
             </i>
       </div>
       <a href="/" class="archor-logo" fxFlex fxLayout>
-        API &nbsp;
         <img src="assets/logo.svg" alt="" height="30px" style="padding-right: 10px;">
+        &nbsp;API
       </a>
 
       <div *ngIf="showVersionOptions" id="version-options" fxFlex fxLayout fxLayoutAlign="flex-end">
@@ -40,7 +40,7 @@
   <mat-drawer-container class="container">
     <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isScreenSmall()" [mode]="isScreenSmall() ? 'over' : 'side'">
       <mat-accordion>
-          <folder-tree [items]="currentTreeView" [tabIndex]="tabIndex"></folder-tree>
+          <folder-tree [items]="currentTreeView" [tabIndex]="tabIndex" [treeLevel]="0" [baseRoot]="getDocumentsBaseRoot()"></folder-tree>
       </mat-accordion>
     </mat-drawer>
     <mat-drawer-content>

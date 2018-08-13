@@ -1,12 +1,12 @@
 <mat-accordion *ngIf="items">
   <div *ngFor="let i of folders">
-      <mat-expansion-panel (opened)="isSidePanelOpen=true" (closed)="isSidePanelOpen=false" (click)="$event.stopPropagation()">
+      <mat-expansion-panel [expanded]="checkIfItemShouldBeOpen(i.path)" (click)="$event.stopPropagation()">
         <mat-expansion-panel-header>
           <mat-panel-title>
             {{i.name}}
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <folder-tree [items]="i.folders"></folder-tree>
+        <folder-tree [items]="i.folders" [treeLevel]="(++treeLevel)"></folder-tree>
       </mat-expansion-panel>
   </div>
 

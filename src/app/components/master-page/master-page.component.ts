@@ -20,7 +20,6 @@ import { RepoService } from '../../services/repo.service';
 import { Config } from '../../models/Config';
 import { OptionItem } from '../../models/OptionItem';
 import { TreeNode } from '../../models/TreeNode';
-import { getTreeNoValidDataSourceError } from '../../../../node_modules/@angular/cdk/tree';
 
 
 const SMALL_WIDTH_BREAKPOINT = 959;
@@ -37,8 +36,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   );
   // @ViewChild(MatSidenav) drawer: MatSidenav;
   @ViewChildren('sidenav') sNav: QueryList<MatSidenav>;
-
-  // isSidePanelOpen = false;
 
   config: Config;
   private siteContent$;
@@ -82,9 +79,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.versionOptions.selected = value;
     this.setCurrentVersion();
   }
-
-  // Events
-
 
   // Commands
 
@@ -183,8 +177,19 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   private setCurrentVersion(path: string = '') {
     const hasVersioning = this.config.enableVersioning;
     const hasMultiLang = this.config.enableMultiLanguage;
-    if (path !== '') {
-    } else if (!hasVersioning && !hasMultiLang) {
+    if (path === '') {
+      path = this.getDocumentsBaseRoot();
+    }
+    this.currentVersion = this.findNode(this.tree, path);
+    this.setCurrentNode();
+    this.currentTreeView = this.setTreeView();
+  }
+  private getDocumentsBaseRoot(): string {
+    let path = '';
+    const hasVersioning = this.config.enableVersioning;
+    const hasMultiLang = this.config.enableMultiLanguage;
+
+    if (!hasVersioning && !hasMultiLang) {
       path = environment.markdownRoot;
     } else if (hasVersioning && !hasMultiLang) {
       path = `${environment.markdownRoot}/${this.versionOptions.selected}`;
@@ -193,9 +198,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     } else {
       path = `${environment.markdownRoot}/${this.versionOptions.selected}/${this.languageOptions.selected}`;
     }
-    this.currentVersion = this.findNode(this.tree, path);
-    this.setCurrentNode();
-    this.currentTreeView = this.setTreeView();
+    return path;
   }
 
   private findNode(node: TreeNode, path: string, byRelativePath = false): TreeNode | null {
