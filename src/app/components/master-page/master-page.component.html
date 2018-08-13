@@ -2,9 +2,9 @@
   <nav class="navbar-header-primary-container">
     <mat-toolbar class="navbar navbar-primary mat-elevation-z10" color="primary">
       <div>
-        <a class="hamburger icon-pr" (click)="sidenav.toggle()" fxFlex fxLayout>
-          <mat-icon>menu</mat-icon>
-        </a>
+          <i class="hamburger icon-pr" fxFlex fxLayout>
+              <mat-icon (click)="sNav.first.toggle()">menu</mat-icon>
+            </i>
       </div>
       <a href="/" class="archor-logo" fxFlex fxLayout>
         API &nbsp;
@@ -46,7 +46,7 @@
     <mat-drawer-content>
       <main class="content">
         <h1>{{ getURL }}</h1>
-        <mat-tab-group (selectedTabChange)="selectingTab($event.index)">
+        <mat-tab-group (selectedTabChange)="selectingTab($event.index)" [selectedIndex]="tabIndex">
           <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="item.name">
             <main-content [currentMarkdown]="currentDocumentContent" ></main-content>
             <!-- <main-content [currentPath]="currentNode.path(selectedDocument)"></main-content> -->

@@ -8,6 +8,8 @@ import {
   NgZone,
   ViewChild,
   OnChanges,
+  ViewChildren,
+  QueryList,
 } from '@angular/core';
 
 import { forkJoin } from 'rxjs';
@@ -18,6 +20,8 @@ import { RepoService } from '../../services/repo.service';
 import { Config } from '../../models/Config';
 import { OptionItem } from '../../models/OptionItem';
 import { TreeNode } from '../../models/TreeNode';
+import { getTreeNoValidDataSourceError } from '../../../../node_modules/@angular/cdk/tree';
+
 
 const SMALL_WIDTH_BREAKPOINT = 959;
 
@@ -31,9 +35,14 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   private mediaMatcher: MediaQueryList = matchMedia(
     `(max-width: ${SMALL_WIDTH_BREAKPOINT}px)`
   );
-  @ViewChild(MatSidenav) sidenav: MatSidenav;
+  // @ViewChild(MatSidenav) drawer: MatSidenav;
+  @ViewChildren('sidenav') sNav: QueryList<MatSidenav>;
+
+  // isSidePanelOpen = false;
+
   config: Config;
   private siteContent$;
+  private pageSource$;
   private routerListener$;
   private repoServiceSubscription;
   private tree: TreeNode;
@@ -45,60 +54,28 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   showVersionOptions: boolean;
   showLanguageOptions: boolean;
-  // isSidePanelOpen = false;
   versionOptions: OptionList = new OptionList();
   languageOptions: OptionList = new OptionList();
   tabIndex = 0;
-  differ: any;
-
 
   constructor(
     private repoService: RepoService,
     private router: Router,
     zone: NgZone,
-    ) {
+  ) {
     this.mediaMatcher.addListener(mql =>
       zone.run(() => (this.mediaMatcher = mql))
     );
   }
 
   ngOnInit() {
-    this.siteContent$ = forkJoin(
-      this.repoService.getConfigs(),
-      this.repoService.getTreeNodes(),
-      (configFile, tree) => {
-        return { configFile, tree };
-      }
-    );
-    this.routerListener$ = this.router.events.subscribe(
-      (e) => {
-        if (e instanceof NavigationEnd) {
-          this.setCurrentNode();
-        }
-      }
-    );
-
-    this.repoServiceSubscription = this.siteContent$.subscribe(response => {
-      this.setConfig(response.configFile.defaultStaticContent);
-      this.setMainTree(response.tree);
-      this.setVersionOptions();
-      this.setLanguageOptions();
-      this.setCurrentVersion();
-      this.selectingTab();
-    });
-
-
-    // this.versions =  environment.versions.map(x => new DocumentationNode(x.name, '', x.id, x.documents, x.nodes as DocumentationNode[]));
-    // this.selectVersion(this.versions.find(x => x.id === environment.defaultStaticContent.version));
-    this.router.events.subscribe(() => {
-      if (this.isScreenSmall()) {
-        this.sidenav.close();
-      }
-    });
+    this.setSiteContentObs();
+    this.subscribeSiteContentObs();
+    this.subscribeRouterListenerObs();
   }
 
   ngOnDestroy() {
-    this.repoServiceSubscription.unsubscribe();
+    this.siteContent$.unsubscribe();
   }
 
   onSelectingVersion(value) {
@@ -106,21 +83,63 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.setCurrentVersion();
   }
 
-  // Commands
-  selectingTab(index = 0): void {
-    this.tabIndex = index;
-    this.refreshCurrentDocument();
-    // this.router.navigate([`${this.currentNode.relativeLink}/${this.tabIndex}`]);
-  }
-  refreshCurrentDocument() {
+  // Events
 
-    console.log(this.currentNode.files[this.tabIndex].apiUrl);
-    const src =  this.repoService.getFile(
+
+  // Commands
+
+  private setPageSourceObs() {
+    this.pageSource$ = this.repoService.getFile(
       this.currentNode.files[this.tabIndex].apiUrl).pipe(take(1)
-    );
-    src.subscribe(res => {
+      );
+  }
+  private subscribePageSourceObs() {
+    this.pageSource$.subscribe(res => {
       this.currentDocumentContent = res;
     });
+  }
+  private refreshPageSource() {
+    this.setPageSourceObs();
+    this.subscribePageSourceObs();
+  }
+
+  private subscribeRouterListenerObs() {
+    this.routerListener$ = this.router.events.subscribe(
+      (e) => {
+        if (this.isScreenSmall()) {
+          // this.sidenav.close();
+        }
+        if (e instanceof NavigationEnd) {
+          this.setCurrentNode();
+          this.refreshPageSource();
+        }
+      }
+    );
+  }
+  private setSiteContentObs() {
+    this.siteContent$ = forkJoin(
+      this.repoService.getConfigs(),
+      this.repoService.getTreeNodes(),
+      (configFile, tree) => {
+        return { configFile, tree };
+      }
+    );
+  }
+  private subscribeSiteContentObs() {
+    this.siteContent$.subscribe(response => {
+      this.setConfig(response.configFile.defaultStaticContent);
+      this.setMainTree(response.tree);
+      this.setVersionOptions();
+      this.setLanguageOptions();
+      this.setCurrentVersion();
+      this.setPageSourceObs();
+      this.refreshPageSource();
+    });
+  }
+
+  selectingTab(index = 0): void {
+    this.tabIndex = index;
+    this.router.navigate([`${this.currentNode.relativeLink}/${this.tabIndex}`]);
   }
 
   private setConfig(config: Config) {
@@ -150,9 +169,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       });
     }
   }
-  private setSelectedVersionOption(option: string) {
-    this.versionOptions.selected = option;
-  }
+
   private setLanguageOptions() {
     if (this.config.enableMultiLanguage) {
       this.config.languages.forEach(element => {
@@ -162,27 +179,23 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       });
     }
   }
-  private setSelectedLanguageOption(option) {
-    this.languageOptions.selected = option;
-  }
 
   private setCurrentVersion(path: string = '') {
     const hasVersioning = this.config.enableVersioning;
     const hasMultiLang = this.config.enableMultiLanguage;
     if (path !== '') {
     } else if (!hasVersioning && !hasMultiLang) {
-        path = environment.markdownRoot;
+      path = environment.markdownRoot;
     } else if (hasVersioning && !hasMultiLang) {
-        path = `${environment.markdownRoot}/${this.versionOptions.selected}`;
+      path = `${environment.markdownRoot}/${this.versionOptions.selected}`;
     } else if (!hasVersioning && hasMultiLang) {
-        path = `${environment.markdownRoot}/${this.languageOptions.selected}`;
+      path = `${environment.markdownRoot}/${this.languageOptions.selected}`;
     } else {
-        path = `${environment.markdownRoot}/${this.versionOptions.selected}/${this.languageOptions.selected}`;
+      path = `${environment.markdownRoot}/${this.versionOptions.selected}/${this.languageOptions.selected}`;
     }
     this.currentVersion = this.findNode(this.tree, path);
-    this.currentNode = this.currentVersion;
-    console.log(this.tree.nodes[1].nodes[2].nodes[0].nodes);
-    this.currentTreeView = this.generateTreeView();
+    this.setCurrentNode();
+    this.currentTreeView = this.setTreeView();
   }
 
   private findNode(node: TreeNode, path: string, byRelativePath = false): TreeNode | null {
@@ -202,15 +215,23 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
     return null;
   }
-  private generateTreeView(node: TreeNode = this.currentVersion): TreeNode[] {
-    let treeView: TreeNode[] = [];
+
+  private setTreeView(node: TreeNode = this.currentVersion): TreeNode[] {
+    const treeView: TreeNode[] = [];
     node.folders.forEach(element => {
       const item = new TreeNode(element.path, element.type, element.sha, element.apiUrl);
       item.relativeLink = element.relativeLink;
-      item.nodes = this.generateTreeView(element);
+      item.nodes = this.setTreeView(element);
       treeView.push(item);
     });
     return treeView;
+  }
+
+  private setSelectedLanguageOption(option) {
+    this.languageOptions.selected = option;
+  }
+  private setSelectedVersionOption(option: string) {
+    this.versionOptions.selected = option;
   }
 
   // Queries
@@ -222,6 +243,10 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
   get getURL() {
     return this.router.url;
+  }
+
+  isTabActive(index: number) {
+    return index === this.tabIndex;
   }
 
   // Helpers

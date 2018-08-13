@@ -50,10 +50,9 @@ mat-drawer-container, mat-drawer-content, mat-drawer {
 }
 .hamburger {
   cursor: pointer;
-  color:#e78200;
+  color: lightgrey;
   :hover {
-    color: lightgrey;
-
+    color:#e78200;
   }
 }
 .icon-pr {

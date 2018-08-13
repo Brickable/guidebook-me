@@ -16,12 +16,13 @@ import { HttpClientModule, HttpClient } from '../../node_modules/@angular/common
 import { RepoService } from './services/repo.service';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
     MasterPageComponent,
     MainContentComponent,
-    FolderTreeComponent
+    FolderTreeComponent,
   ],
   imports: [
     BrowserModule,
