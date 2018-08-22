@@ -144,9 +144,14 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   // COMMANDS
   private load(): void {
-    this.setCurrentNode();
-    this.refreshPageSource();
-    this.currentTreeView = this.getTreeView();
+    try {
+      this.setCurrentNode(this.currentVersion, this.getRelativePathByUrl(), true);
+      this.refreshPageSource();
+      this.currentTreeView = this.getTreeView();
+    }  catch {
+      console.log('invalid URL');
+      this.router.navigate(['/'], { queryParams: this.queryParamsObj });
+    }
   }
   private refreshPageSource(): void {
     this.setPageSourceObs();
@@ -156,9 +161,9 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     rawTree.generateRelativeLinksRecursive(this.config.enableVersioning, this.config.enableMultiLanguage);
     this.tree = rawTree;
   }
-  private setCurrentNode(): void {
-    this.currentNode = this.findNode(this.currentVersion, this.getRelativePathByUrl(), true);
-    this.selectTab(this.currentNode.getIndexByRawName(this.getFileNameByUrl()));
+  private setCurrentNode(baseNode: TreeNode, path: string, byRelativePath): void {
+      this.currentNode = this.findNode(baseNode, path, byRelativePath);
+      this.selectTab(this.currentNode.getIndexByRawName(this.getFileNameByUrl()));
   }
   private selectTab(tabIndex = 0): void {
     this.tabIndex = (tabIndex === 0) ? this.currentNode.tabIndex : tabIndex;
