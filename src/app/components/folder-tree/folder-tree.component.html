@@ -6,17 +6,18 @@
             {{i.name}}
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <folder-tree [items]="i.folders" [treeLevel]="(++treeLevel)"></folder-tree>
+        <folder-tree [items]="i.folders" [treeLevel]="(++treeLevel)" [baseRoot]="baseRoot" [queryParams]="getQueryParams"></folder-tree>
       </mat-expansion-panel>
   </div>
 
   <div *ngIf="folders.length && links.length" class="spacer"></div>
 
   <div *ngFor="let i of links">
-    <a [routerLink]="[i.relativeLink]" class="file-link" (click)="navigate($event, i)">
-      <mat-icon>file_copy</mat-icon>
-      <span>{{i.name}}</span>
+    <a [routerLink]="[i.relativeLink]" [queryParams]="getQueryParams" queryParamsHandling="merge" class="file-link">
+      <div class="leaf">
+          <mat-icon>{{getFileIcon(i.relativeLink)}}</mat-icon>
+          <span>{{i.name}}</span>
+      </div>
     </a>
   </div>
-
 </mat-accordion>

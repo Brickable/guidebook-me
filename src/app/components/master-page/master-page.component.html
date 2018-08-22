@@ -3,8 +3,8 @@
     <mat-toolbar class="navbar navbar-primary mat-elevation-z10" color="primary">
       <div>
           <i class="hamburger icon-pr" fxFlex fxLayout>
-              <mat-icon (click)="sNav.first.toggle()">menu</mat-icon>
-            </i>
+            <mat-icon (click)="sNav.first.toggle()">menu</mat-icon>
+          </i>
       </div>
       <a href="/" class="archor-logo" fxFlex fxLayout>
         <img src="assets/logo.svg" alt="" height="30px" style="padding-right: 10px;">
@@ -20,7 +20,6 @@
                 <small>({{currentVersion.name}})</small>
               </span>
             </button>
-
             <button matTooltip="Select version" fxHide.gt-sm mat-icon-button [matMenuTriggerFor]="versionmenu">
               <mat-icon>more_vert</mat-icon>
             </button>
@@ -38,18 +37,17 @@
 
 <section class="middle" *ngIf="currentNode">
   <mat-drawer-container class="container">
-    <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isScreenSmall()" [mode]="isScreenSmall() ? 'over' : 'side'">
+    <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isScreenSmall" [mode]="isScreenSmall ? 'over' : 'side'">
       <mat-accordion>
-          <folder-tree [items]="currentTreeView" [tabIndex]="tabIndex" [treeLevel]="0" [baseRoot]="getDocumentsBaseRoot()"></folder-tree>
+          <folder-tree [items]="currentTreeView" [tabIndex]="tabIndex" [treeLevel]="0" [baseRoot]="getDocumentsBaseRoot()" [queryParams]="getQueryParams"></folder-tree>
       </mat-accordion>
     </mat-drawer>
     <mat-drawer-content>
       <main class="content">
         <h1>{{ getURL }}</h1>
-        <mat-tab-group (selectedTabChange)="selectingTab($event.index)" [selectedIndex]="tabIndex">
+        <mat-tab-group (selectedTabChange)="onSelectingTab($event.index)" [selectedIndex]="tabIndex">
           <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="item.name">
             <main-content [currentMarkdown]="currentDocumentContent" ></main-content>
-            <!-- <main-content [currentPath]="currentNode.path(selectedDocument)"></main-content> -->
           </mat-tab>
         </mat-tab-group>
       </main>

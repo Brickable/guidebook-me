@@ -1,5 +1,5 @@
 import { TreeNode } from './../../models/TreeNode';
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter  } from '@angular/core';
 import { Router } from '../../../../node_modules/@angular/router';
 
 
@@ -11,10 +11,12 @@ import { Router } from '../../../../node_modules/@angular/router';
 export class FolderTreeComponent {
   constructor(private router: Router) {}
   @Input() items: TreeNode[] = [];
-  @Input() treeLevel: Number;
+  @Input() treeLevel: number;
   @Input() baseRoot = '';
+  @Input() queryParams: object;
+  @Output() linkClick: EventEmitter<string> = new EventEmitter();
 
-  checkIfItemShouldBeOpen(iPath) {
+  public checkIfItemShouldBeOpen(iPath): boolean {
     const ar = this.router.url.substring(1).split('/');
     ar.pop();
     let path = this.baseRoot;
@@ -25,18 +27,19 @@ export class FolderTreeComponent {
     });
     return (path.includes(iPath));
   }
+  public getFileIcon(relativePath: string): string {
+    return (this.router.url.includes(relativePath)) ? 'visibility' : 'file_copy';
+  }
 
-  get folders() {
+  get folders(): TreeNode[] {
     return this.items.filter(x => x.nodes.length);
   }
-  get links() {
+  get links(): TreeNode[] {
     return this.items.filter(x => !x.nodes.length);
   }
-
-
-
-  navigate($event, item: TreeNode) {
-    $event.stopPropagation();
-    this.router.navigate([item.relativeLink + '/0']);
+  get getQueryParams(): object {
+    return this.queryParams;
   }
+
+
 }

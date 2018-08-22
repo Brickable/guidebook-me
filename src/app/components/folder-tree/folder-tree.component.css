@@ -5,10 +5,13 @@
 .spacer {
   margin: 20px;
 }
+mat-icon {
+  height: 18px;
+}
 
 .mat-icon {
-  font-size: 14px;
-
+  font-size: 18px;
+  vertical-align: middle;
 }
 .folder-link {
   text-decoration: none;

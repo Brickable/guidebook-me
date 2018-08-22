@@ -10,7 +10,7 @@ export class Path {
     this.pathLevels = this.splitPath.length;
   }
   splitPath: string[];
-  pathLevels: Number;
+  pathLevels: number;
   isFile: boolean;
   isFolder: boolean;
   paths?: Path[];
