@@ -11,13 +11,31 @@
         &nbsp;API
       </a>
 
-      <div *ngIf="showVersionOptions" id="version-options" fxFlex fxLayout fxLayoutAlign="flex-end">
+
+
+      <div *ngIf="showOptionsBar" id="language-options" fxFlex fxLayout fxLayoutAlign="flex-end">
         <ul fxLayout fxLayoutGap="10px" class="navigation-items">
-          <li>
+          <li *ngIf="showLanguageOptions">
+            <button fxHide.lt-md mat-button [matMenuTriggerFor]="languagemenu" matTooltip="Choose language">
+              <mat-icon>more_vert</mat-icon>
+              <span>Language
+                <small>({{languageOptions.selected}})</small>
+              </span>
+            </button>
+            <button matTooltip="Select Language" fxHide.gt-sm mat-icon-button [matMenuTriggerFor]="languagemenu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #languagemenu="matMenu">
+              <button mat-menu-item *ngFor="let lang of languageOptions.items" (click)="onSelectingLanguage(lang.value)">
+                {{lang.text}}
+              </button>
+            </mat-menu>
+          </li>
+          <li *ngIf="showVersionOptions">
             <button fxHide.lt-md mat-button [matMenuTriggerFor]="versionmenu" matTooltip="Choose version">
               <mat-icon>more_vert</mat-icon>
               <span>Version
-                <small>({{currentVersion.name}})</small>
+                <small>({{versionOptions.selected}})</small>
               </span>
             </button>
             <button matTooltip="Select version" fxHide.gt-sm mat-icon-button [matMenuTriggerFor]="versionmenu">
@@ -29,6 +47,7 @@
               </button>
             </mat-menu>
           </li>
+
         </ul>
       </div>
     </mat-toolbar>

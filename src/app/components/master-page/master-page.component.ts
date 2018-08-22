@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { forkJoin } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { take, map } from 'rxjs/operators';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { MatSidenav } from '@angular/material';
 import { RepoService } from '../../services/repo.service';
@@ -41,7 +41,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   private config: Config;
   private tree: TreeNode;
-  private queryParamObj: object;
+  private queryParamsObj = {};
   private versionQueryParamKey = 'v';
   private languageQueryParamKey = 'lang';
   private currentUrl = '';
@@ -74,12 +74,15 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   // EVENTS
   public onSelectingTab(tabIndex = 0): void {
-    this.tabIndex = (tabIndex === 0) ? this.currentNode.tabIndex : tabIndex;
-    this.currentUrl = `${this.currentNode.relativeLink}/${this.currentNode.files[this.tabIndex].rawName}`;
-    this.router.navigate([this.currentUrl], { queryParams: this.queryParamObj });
+    this.selectTab(tabIndex);
   }
   public onSelectingVersion(value): void {
-    this.router.navigate([`${this.currentUrl}`], { queryParams: { v: value } });
+    this.updateQueryParams(this.versionQueryParamKey, value);
+    this.router.navigate([`${this.currentUrl}`], { queryParams: this.queryParamsObj });
+  }
+  public onSelectingLanguage(value): void {
+    this.updateQueryParams(this.languageQueryParamKey, value);
+    this.router.navigate([`${this.currentUrl}`], { queryParams: this.queryParamsObj });
   }
 
   ////  Setup Observables
@@ -101,7 +104,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   private subscribeRouteQueryParamsObs(): void {
     const _this = this;
     this.routeQueryParams$ = this.route.queryParams.subscribe(x => {
-      _this.queryParamObj = x;
+      _this.queryParamsObj = x;
       const version = (x[_this.versionQueryParamKey]) ? x[_this.versionQueryParamKey] : _this.config.defaultVersion;
       const language = (x[_this.languageQueryParamKey]) ? x[_this.languageQueryParamKey] : _this.config.defaultLanguage;
       _this.setVersionOptions(version);
@@ -155,7 +158,12 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
   private setCurrentNode(): void {
     this.currentNode = this.findNode(this.currentVersion, this.getRelativePathByUrl(), true);
-    this.onSelectingTab(this.currentNode.getIndexByRawName(this.getFileNameByUrl()));
+    this.selectTab(this.currentNode.getIndexByRawName(this.getFileNameByUrl()));
+  }
+  private selectTab(tabIndex = 0): void {
+    this.tabIndex = (tabIndex === 0) ? this.currentNode.tabIndex : tabIndex;
+    this.currentUrl = `${this.currentNode.relativeLink}/${this.currentNode.files[this.tabIndex].rawName}`;
+    this.router.navigate([this.currentUrl], { queryParams: this.queryParamsObj });
   }
   private setCurrentVersion(path: string = ''): void {
     if (path === '') {
@@ -186,6 +194,11 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         this.languageOptions.items.push(item);
       });
     }
+  }
+  private updateQueryParams(key, value): void {
+    let clone = Object.assign({}, this.queryParamsObj);
+    clone[key] = value;
+    this.queryParamsObj = clone;
   }
 
   // QUERIES
@@ -262,10 +275,17 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     );
   }
   get showLanguageOptions(): boolean {
-    return (this.config && this.config.enableMultiLanguage && this.languageOptions.items && this.languageOptions.items.length !== 0);
+    return (this.config !== undefined
+      && this.config.enableMultiLanguage
+      && this.languageOptions.items
+      && this.languageOptions.items.length !== 0);
+  }
+
+  get showOptionsBar(): boolean {
+    return this.showLanguageOptions || this.showVersionOptions;
   }
   get getQueryParams(): object  {
-    return this.queryParamObj;
+    return this.queryParamsObj;
   }
 
   // Helpers

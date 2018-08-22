@@ -20,13 +20,15 @@ $secondary-typography: mat-typography-config(
 // SETUP THEME
 $mainColor:#313340;
 $secondaryColor:#e78200;
+$secondaryHoverColor:#f3c180;
+$secondaryActiveColor:#dd6500;
 
 
-$md-goreprimary: ( 50: #e6e7e8, 100: #c1c2c6, 200: #9899a0, 300: #6f7079, 400: #50525d, 500: #313340, 600: #2c2e3a, 700: #252732, 800: #1f202a, 900: #13141c, A100: #6278ff, A200: #2f4cff, A400: #0024fb, A700: #0020e1, contrast: ( 50: #000000, 100: #000000, 200: #000000, 300: #ffffff, 400: #ffffff, 500: #ffffff, 600: #ffffff, 700: #ffffff, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #ffffff, A400: #ffffff, A700: #ffffff, ));
-// $md-goresecondary: ( 50: #f7e6e7, 100: #ecc1c3, 200: #df979c, 300: #d26d74, 400: #c94e56, 500: #bf2f38, 600: #b92a32, 700: #b1232b, 800: #a91d24, 900: #9b1217, A100: #ffcdce, A200: #ff9a9d, A400: #ff676b, A700: #ff4d53, contrast: ( 50: #000000, 100: #000000, 200: #000000, 300: #000000, 400: #ffffff, 500: #ffffff, 600: #ffffff, 700: #ffffff, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #000000, A400: #000000, A700: #000000, ));
-$md-goresecondary: ( 50: #fcf0e0, 100: #f8dab3, 200: #f3c180, 300: #eea84d, 400: #eb9526, 500: #e78200, 600: #e47a00, 700: #e06f00, 800: #dd6500, 900: #d75200, A100: #fffefe, A200: #ffdccb, A400: #ffb998, A700: #ffa77f, contrast: ( 50: #000000, 100: #000000, 200: #000000, 300: #000000, 400: #000000, 500: #000000, 600: #000000, 700: #000000, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #000000, A400: #000000, A700: #000000, ));
-$custom-primary: mat-palette($md-goreprimary);
-$custom-accent: mat-palette($md-goresecondary);
+$md-primary: ( 50: #e6e7e8, 100: #c1c2c6, 200: #9899a0, 300: #6f7079, 400: #50525d, 500: #313340, 600: #2c2e3a, 700: #252732, 800: #1f202a, 900: #13141c, A100: #6278ff, A200: #2f4cff, A400: #0024fb, A700: #0020e1, contrast: ( 50: #000000, 100: #000000, 200: #000000, 300: #ffffff, 400: #ffffff, 500: #ffffff, 600: #ffffff, 700: #ffffff, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #ffffff, A400: #ffffff, A700: #ffffff, ));
+// $md-secondary: ( 50: #f7e6e7, 100: #ecc1c3, 200: #df979c, 300: #d26d74, 400: #c94e56, 500: #bf2f38, 600: #b92a32, 700: #b1232b, 800: #a91d24, 900: #9b1217, A100: #ffcdce, A200: #ff9a9d, A400: #ff676b, A700: #ff4d53, contrast: ( 50: #000000, 100: #000000, 200: #000000, 300: #000000, 400: #ffffff, 500: #ffffff, 600: #ffffff, 700: #ffffff, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #000000, A400: #000000, A700: #000000, ));
+$md-secondary: ( 50: #fcf0e0, 100: #f8dab3, 200: #f3c180, 300: #eea84d, 400: #eb9526, 500: #e78200, 600: #e47a00, 700: #e06f00, 800: #dd6500, 900: #d75200, A100: #fffefe, A200: #ffdccb, A400: #ffb998, A700: #ffa77f, contrast: ( 50: #000000, 100: #000000, 200: #000000, 300: #000000, 400: #000000, 500: #000000, 600: #000000, 700: #000000, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #000000, A400: #000000, A700: #000000, ));
+$custom-primary: mat-palette($md-primary);
+$custom-accent: mat-palette($md-secondary);
 $custom-theme: mat-light-theme( $custom-primary, $custom-accent);
 
 @include angular-material-theme($custom-theme);
@@ -43,6 +45,16 @@ body {
 
 body * {
   text-align: left;
+}
+
+a {
+  color: $secondaryColor;
+  :hover {
+    color: $secondaryHoverColor;
+  }
+  :active {
+    color: $secondaryActiveColor;
+  }
 }
 
 
