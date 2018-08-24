@@ -63,7 +63,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.setSiteContentObs();
     this.subscribeSiteContentObs();
-    this.subscribeRouterListenerObs();
   }
   ngOnDestroy(): void {
     this.siteContent$.unsubscribe();
@@ -116,16 +115,10 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   private subscribeRouteUrlObs(): void {
     const _this = this;
     this.routeUrl$ = this.route.url.subscribe(
-      x => _this.currentUrl = x.join('/'));
-  }
-  private subscribeRouterListenerObs() {
-    this.routerListener$ = this.router.events.subscribe(
-      (e) => {
-        if (e instanceof NavigationEnd) {
-          this.load();
-        }
-      }
-    );
+      x => {
+        _this.currentUrl = x.join('/');
+        this.load();
+      });
   }
   private subscribePageSourceObs(): void {
     this.pageSource$.subscribe(res => {
@@ -145,11 +138,13 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   // COMMANDS
   private load(): void {
     try {
-      this.setCurrentNode(this.currentVersion, this.getRelativePathByUrl(), true);
-      this.refreshPageSource();
-      this.currentTreeView = this.getTreeView();
-    }  catch {
-      console.log('invalid URL');
+      if (this.currentVersion !== undefined) {
+        this.setCurrentNode(this.currentVersion, this.getRelativePathByUrl(), true);
+        this.refreshPageSource();
+        this.currentTreeView = this.getTreeView();
+      }
+    }  catch (e) {
+      console.log('Invalid Url');
       this.router.navigate(['/'], { queryParams: this.queryParamsObj });
     }
   }
