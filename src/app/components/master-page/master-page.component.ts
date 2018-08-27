@@ -18,6 +18,7 @@ import { RepoService } from '../../services/repo.service';
 import { Config } from '../../models/Config';
 import { OptionItem } from '../../models/OptionItem';
 import { TreeNode } from '../../models/TreeNode';
+import { ToastrService } from 'ngx-toastr';
 
 
 const SMALL_WIDTH_BREAKPOINT = 959;
@@ -54,10 +55,9 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   languageOptions: OptionList = new OptionList();
   tabIndex = 0;
 
-  constructor(private repoService: RepoService, private router: Router, private route: ActivatedRoute, zone: NgZone) {
-    this.mediaMatcher.addListener(mql =>
-      zone.run(() => (this.mediaMatcher = mql))
-    );
+  constructor(private repoService: RepoService, private router: Router, private route: ActivatedRoute,
+    zone: NgZone, private toast: ToastrService) {
+      this.mediaMatcher.addListener(mql => zone.run(() => (this.mediaMatcher = mql)));
   }
 
   ngOnInit(): void {
@@ -86,9 +86,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
 
   ////  Setup Observables
   private setPageSourceObs(): void {
-    this.pageSource$ = this.repoService.getFile(
-      this.currentNode.files[this.tabIndex].apiUrl).pipe(take(1)
-      );
+    this.pageSource$ = this.repoService.getFile(this.currentNode.files[this.tabIndex].apiUrl).pipe(take(1));
   }
   private setSiteContentObs(): void {
     this.siteContent$ = forkJoin(
@@ -131,7 +129,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       this.setMainTree(response.tree);
       this.subscribeRouteUrlObs();
       this.subscribeRouteQueryParamsObs();
-      this.refreshPageSource();
     });
   }
 
@@ -144,11 +141,13 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         this.currentTreeView = this.getTreeView();
       }
     }  catch (e) {
-      console.log('Invalid Url');
+      this.toast.warning(this.invalidUrlMessage, undefined, environment.toastSettings );
       this.router.navigate(['/'], { queryParams: this.queryParamsObj });
     }
   }
   private refreshPageSource(): void {
+    this.setPageSourceObs();
+    this.subscribePageSourceObs();
     this.setPageSourceObs();
     this.subscribePageSourceObs();
   }
@@ -171,7 +170,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
     this.currentVersion = this.findNode(this.tree, path);
     if (!this.currentVersion) {
-      console.log('invalid querystring');
+      this.toast.warning(this.invalidUrlMessage, undefined, environment.toastSettings );
       this.router.navigate(['/']);
     }
   }
@@ -256,6 +255,10 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   public isTabActive(index: number): boolean {
     return index === this.tabIndex;
   }
+  private get invalidUrlMessage() {
+    return ((this.config) && (this.config['invalidUrl'])) ? this.config['invalidUrl'] : environment.defaultToastMessages.invalidUrl;
+  }
+
   get isScreenSmall(): boolean {
     return this.mediaMatcher.matches;
   }

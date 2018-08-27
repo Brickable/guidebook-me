@@ -14,6 +14,7 @@ import { MainContentComponent } from './components/main-content/main-content.com
 import { FolderTreeComponent } from './components/folder-tree/folder-tree.component';
 import { HttpClientModule, HttpClient } from '../../node_modules/@angular/common/http';
 import { RepoService } from './services/repo.service';
+import { ToastrModule } from 'ngx-toastr';
 
 
 
@@ -34,7 +35,11 @@ import { RepoService } from './services/repo.service';
       { path: '**', component: MasterPageComponent}
     ]),
     MarkdownModule.forRoot({ loader: HttpClient }),
-    FlexLayoutModule
+    FlexLayoutModule,
+    ToastrModule.forRoot({
+      preventDuplicates: true,
+      resetTimeoutOnDuplicate: true
+    })
   ],
   providers: [
     RepoService
