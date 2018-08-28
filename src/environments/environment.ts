@@ -1,9 +1,13 @@
 export const environment = {
   production: false,
   repoUrl: 'https://api.github.com/repos/Brickable/API-DOC-MarkdownDocumentation',
-  branch: 'master',
+  branch: 'AllowLanguageBranch',
   markdownRoot: 'markdown',
-  configFile: 'config.json',
+  configFileRoot: 'config.json',
+  dictionaireRoot: 'dictionaire.csv',
+  dictionaireKeyName: 'key',
+  useDictionaire: true,
+  useUnderscoreToSpaceConvention: true,
   toastSettings: {
     timeOut: 3000,
     easing: 'ease-in',

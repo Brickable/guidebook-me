@@ -46,6 +46,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   private versionQueryParamKey = 'v';
   private languageQueryParamKey = 'lang';
   private currentUrl = '';
+  private dictionaire = [];
 
   currentVersion: TreeNode;
   currentNode: TreeNode;
@@ -61,7 +62,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.setSiteContentObs();
     this.subscribeSiteContentObs();
   }
   ngOnDestroy(): void {
@@ -84,19 +84,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.router.navigate([`${this.currentUrl}`], { queryParams: this.queryParamsObj });
   }
 
-  ////  Setup Observables
-  private setPageSourceObs(): void {
-    this.pageSource$ = this.repoService.getFile(this.currentNode.files[this.tabIndex].apiUrl).pipe(take(1));
-  }
-  private setSiteContentObs(): void {
-    this.siteContent$ = forkJoin(
-      this.repoService.getConfigs(),
-      this.repoService.getTreeNodes(),
-      (configFile, tree) => {
-        return { configFile, tree };
-      }
-    );
-  }
   ////  Subscribe observables
   private subscribeRouteQueryParamsObs(): void {
     const _this = this;
@@ -104,8 +91,8 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       _this.queryParamsObj = x;
       const version = (x[_this.versionQueryParamKey]) ? x[_this.versionQueryParamKey] : _this.config.defaultVersion;
       const language = (x[_this.languageQueryParamKey]) ? x[_this.languageQueryParamKey] : _this.config.defaultLanguage;
-      _this.setVersionOptions(version);
       _this.setLanguageOptions(language);
+      _this.setVersionOptions(version);
       _this.setCurrentVersion();
       _this.load();
     });
@@ -119,17 +106,21 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       });
   }
   private subscribePageSourceObs(): void {
-    this.pageSource$.subscribe(res => {
-      this.currentDocumentContent = res;
-    });
+    this.pageSource$ = this.repoService
+      .getFile(this.currentNode.files[this.tabIndex].apiUrl)
+      .pipe(take(1)).subscribe(res => {
+        this.currentDocumentContent = res;
+      });
   }
   private subscribeSiteContentObs(): void {
-    this.siteContent$.subscribe(response => {
-      this.config = response.configFile.defaultStaticContent;
-      this.setMainTree(response.tree);
-      this.subscribeRouteUrlObs();
-      this.subscribeRouteQueryParamsObs();
-    });
+    this.siteContent$ = this.repoService.getSiteContent()
+      .subscribe(response => {
+        this.config = response.configFile.defaultStaticContent;
+        this.setMainTree(response.tree);
+        this.dictionaire = response.dictionaire;
+        this.subscribeRouteUrlObs();
+        this.subscribeRouteQueryParamsObs();
+      });
   }
 
   // COMMANDS
@@ -146,13 +137,13 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
   }
   private refreshPageSource(): void {
-    this.setPageSourceObs();
-    this.subscribePageSourceObs();
-    this.setPageSourceObs();
     this.subscribePageSourceObs();
   }
   private setMainTree(rawTree: TreeNode): void {
-    rawTree.generateRelativeLinksRecursive(this.config.enableVersioning, this.config.enableMultiLanguage);
+    rawTree.generateRelativeLinksRecursive(
+      this.config.enableVersioning,
+      this.config.enableMultiLanguage
+    );
     this.tree = rawTree;
   }
   private setCurrentNode(baseNode: TreeNode, path: string, byRelativePath): void {
@@ -179,7 +170,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     if (this.config.enableVersioning) {
       this.versionOptions.selected = version;
       this.config.versions.forEach(element => {
-        const item = new OptionItem(element, this.spacingText(element));
+        const item = new OptionItem(element, this.getNameByusedConventions(element));
         this.versionOptions.items.push(item);
       });
     }
@@ -189,7 +180,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     if (this.config.enableMultiLanguage) {
       this.languageOptions.selected = language;
       this.config.languages.forEach(element => {
-        const item = new OptionItem(element, this.spacingText(element));
+        const item = new OptionItem(element, this.getNameByusedConventions(element));
         this.languageOptions.items.push(item);
       });
     }
@@ -201,10 +192,25 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
 
   // QUERIES
+  private getTranslation(keyVal: string) {
+    const dicItem = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLocaleLowerCase() === keyVal.toLocaleLowerCase());
+    return (dicItem) ? dicItem[this.languageOptions.selected] : '';
+  }
+  private getNameByusedConventions(text: string): string {
+    if (environment.useDictionaire) {
+      const match = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLowerCase() === text.toLowerCase());
+      if (match) {
+        return match[this.languageOptions.selected];
+      }
+    }
+    return (environment.useUnderscoreToSpaceConvention) ?
+      text.split('_').join(' ').replace ('.md', '') : text;
+  }
   private getTreeView(node: TreeNode = this.currentVersion): TreeNode[] {
     const treeView: TreeNode[] = [];
     node.folders.forEach(element => {
-      const item = new TreeNode(element.path, element.type, element.sha, element.apiUrl);
+      const item = new TreeNode(element.path, element.type, element.sha,
+        element.apiUrl, this.getTranslation(element.rawNameWithoutFileExtension));
       item.relativeLink = element.relativeLink;
       item.nodes = this.getTreeView(element);
       treeView.push(item);
@@ -265,9 +271,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   get getCurrentNodeDocuments(): TreeNode[] {
     return this.currentNode.nodes.filter(x => x.isFile);
   }
-  get getURL(): string {
-    return this.router.url;
-  }
   get showVersionOptions(): boolean {
     return (this.config !== undefined
       && this.config.enableVersioning
@@ -289,11 +292,5 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
   get getQueryParams(): object  {
     return this.queryParamsObj;
-  }
-
-  // Helpers
-  private spacingText(text: string, isPath = false): string {
-    text = (isPath) ? text.substring(0, text.lastIndexOf('.')) : text;
-    return text.split('_').join(' ');
   }
 }
