@@ -2,11 +2,13 @@
 @import '~@angular/material/theming';
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic&subset=latin-ext');
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic&amp;subset=latin-ext');
-
+@import '~ngx-toastr/toastr.css';
 
 // SETUP FONT
+$font-family: '"Open Sans", "Roboto", "Segoe UI", sans-serif';
+
 $general-typography: mat-typography-config(
-  $font-family: '"Open Sans", "Roboto", "Segoe UI", sans-serif'
+  $font-family: $font-family
 );
 
 $secondary-typography: mat-typography-config(
@@ -15,13 +17,17 @@ $secondary-typography: mat-typography-config(
 @include mat-core($general-typography);
 
 
-
-
 // SETUP THEME
 $mainColor:#313340;
 $secondaryColor:#e78200;
 $secondaryHoverColor:#f3c180;
 $secondaryActiveColor:#dd6500;
+
+$navbar-primary-height: 64px;
+$footer-height: 64px;
+$sidenav-width:350px;
+
+
 
 
 $md-primary: ( 50: #e6e7e8, 100: #c1c2c6, 200: #9899a0, 300: #6f7079, 400: #50525d, 500: #313340, 600: #2c2e3a, 700: #252732, 800: #1f202a, 900: #13141c, A100: #6278ff, A200: #2f4cff, A400: #0024fb, A700: #0020e1, contrast: ( 50: #000000, 100: #000000, 200: #000000, 300: #ffffff, 400: #ffffff, 500: #ffffff, 600: #ffffff, 700: #ffffff, 800: #ffffff, 900: #ffffff, A100: #000000, A200: #ffffff, A400: #ffffff, A700: #ffffff, ));
@@ -145,6 +151,93 @@ th {
   font-weight: bolder;
 }
 
-blockquote{
+blockquote {
   margin: 3rem;
 }
+
+// css - Structure
+header.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+section.middle {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: $navbar-primary-height;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.left-sidebar {
+  flex: 1;
+}
+main.content {
+   padding: 18px 40px;
+}
+
+
+mat-drawer-container, mat-drawer-content, mat-drawer {
+  height:  100%;
+}
+
+// nav.navbar-header-primary-container {}
+// nav.navbar-header-secondary-container {}
+
+// footer.footer {}
+// .navbar-navbar-primary {}
+// .navbar-navbar-secondary {}
+// .navbar {}
+// .container {}
+
+// css - Design
+.navigation-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.hamburger {
+  cursor: pointer;
+  color: lightgrey;
+  :hover {
+    color:#e78200;
+  }
+}
+.icon-pr {
+  display: inline-block;
+  padding-right:20px;
+}
+.capitalize {
+  text-transform: capitalize;
+}
+
+.archor-logo {
+  text-decoration: none;
+  color: lightgrey;
+}
+
+
+
+//Toastr alerts customization
+
+
+.toast {
+  background-image: none !important;
+  background-color: $secondaryColor;
+  width: 50% !important;
+}
+.toast-container {
+  font-family: '"Open Sans", "Roboto", "Segoe UI", sans-serif';
+}
+
+.toast-top-center {
+  top: 8px;
+  height: 32px;
+  right: 0;
+  width: 100%;
+  opacity: 0.7;
+}
+

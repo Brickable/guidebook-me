@@ -19,7 +19,7 @@
             <button fxHide.lt-md mat-button [matMenuTriggerFor]="languagemenu" matTooltip="Choose language">
               <mat-icon>more_vert</mat-icon>
               <span>Language
-                <small>({{languageOptions.selected}})</small>
+                <small>({{languageOptions.selectedName}})</small>
               </span>
             </button>
             <button matTooltip="Select Language" fxHide.gt-sm mat-icon-button [matMenuTriggerFor]="languagemenu">
@@ -35,7 +35,7 @@
             <button fxHide.lt-md mat-button [matMenuTriggerFor]="versionmenu" matTooltip="Choose version">
               <mat-icon>more_vert</mat-icon>
               <span>Version
-                <small>({{versionOptions.selected}})</small>
+                <small>({{versionOptions.selectedName}})</small>
               </span>
             </button>
             <button matTooltip="Select version" fxHide.gt-sm mat-icon-button [matMenuTriggerFor]="versionmenu">
@@ -63,9 +63,8 @@
     </mat-drawer>
     <mat-drawer-content>
       <main class="content">
-        <h1>{{ getURL }}</h1>
         <mat-tab-group (selectedTabChange)="onSelectingTab($event.index)" [selectedIndex]="tabIndex">
-          <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="item.name">
+          <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="getNameByusedConventions(item.name)">
             <main-content [currentMarkdown]="currentDocumentContent" ></main-content>
           </mat-tab>
         </mat-tab-group>

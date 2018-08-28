@@ -7,4 +7,7 @@ export class OptionList {
   get show() {
     return this.items.length > 0;
   }
+  get selectedName() {
+    return this.items.find(x => x.value === this.selected).text;
+  }
 }
