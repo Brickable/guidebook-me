@@ -60,7 +60,6 @@ export class RepoService {
   public getFile(url: string) {
     return this.http.get(url).pipe(
       map(file => Base64.decode(file['content']))
-        // atob(file['content']))
     );
   }
 
