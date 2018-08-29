@@ -10,7 +10,6 @@ import {
   QueryList,
 } from '@angular/core';
 
-import { forkJoin } from 'rxjs';
 import { take, map } from 'rxjs/operators';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { MatSidenav } from '@angular/material';
@@ -19,6 +18,7 @@ import { Config } from '../../models/Config';
 import { OptionItem } from '../../models/OptionItem';
 import { TreeNode } from '../../models/TreeNode';
 import { ToastrService } from 'ngx-toastr';
+import { Title } from '@angular/platform-browser';
 
 
 const SMALL_WIDTH_BREAKPOINT = 959;
@@ -57,12 +57,17 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   tabIndex = 0;
 
   constructor(private repoService: RepoService, private router: Router, private route: ActivatedRoute,
-    zone: NgZone, private toast: ToastrService) {
+    zone: NgZone, private toast: ToastrService, private titleService: Title ) {
       this.mediaMatcher.addListener(mql => zone.run(() => (this.mediaMatcher = mql)));
   }
 
   ngOnInit(): void {
     this.subscribeSiteContentObs();
+    this.router.events.subscribe((val) => {
+      if (val instanceof NavigationEnd) {
+        console.log(val);
+      }
+  });
   }
   ngOnDestroy(): void {
     this.siteContent$.unsubscribe();
@@ -130,11 +135,15 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         this.setCurrentNode(this.currentVersion, this.getRelativePathByUrl(), true);
         this.refreshPageSource();
         this.currentTreeView = this.getTreeView();
+        this.setTitle();
       }
     }  catch (e) {
-      this.toast.warning(this.invalidUrlMessage, undefined, environment.toastSettings );
+      this.toast.warning(this.getInvalidUrlMessage(), undefined, environment.toastSettings );
       this.router.navigate(['/'], { queryParams: this.queryParamsObj });
     }
+  }
+  private setTitle() {
+    this.titleService.setTitle(this.currentNode.files[this.tabIndex].name);
   }
   private refreshPageSource(): void {
     this.subscribePageSourceObs();
@@ -161,7 +170,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
     this.currentVersion = this.findNode(this.tree, path);
     if (!this.currentVersion) {
-      this.toast.warning(this.invalidUrlMessage, undefined, environment.toastSettings );
+      this.toast.warning(this.getInvalidUrlMessage(), undefined, environment.toastSettings );
       this.router.navigate(['/']);
     }
   }
@@ -197,14 +206,13 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     return (dicItem) ? dicItem[this.languageOptions.selected] : '';
   }
   private getNameByusedConventions(text: string): string {
-    if (environment.useDictionaire) {
+    if (this.config[environment.keyForEnableDictionaires]) {
       const match = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLowerCase() === text.toLowerCase());
       if (match) {
         return match[this.languageOptions.selected];
       }
     }
-    return (environment.useUnderscoreToSpaceConvention) ?
-      text.split('_').join(' ').replace ('.md', '') : text;
+    return (environment.useUnderscoreToSpaceConvention) ? text.split('_').join(' ').replace ('.md', '') : text;
   }
   private getTreeView(node: TreeNode = this.currentVersion): TreeNode[] {
     const treeView: TreeNode[] = [];
@@ -242,6 +250,16 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     return (this.currentUrl.toLowerCase().endsWith('.md')) ?
       this.currentUrl.substring(this.currentUrl.lastIndexOf('/') + 1) : '';
   }
+  private getInvalidUrlMessage() {
+    if ((this.dictionaire || this.config)
+        && (this.getTranslation(environment.keyForInvalidUrlMessageDictionaire))
+        && this.config[environment.keyForEnableDictionaires]) {
+          const msg = this.getTranslation(environment.keyForInvalidUrlMessageDictionaire);
+          return (msg) ? msg : environment.defaultToastMessages.invalidUrl;
+    }
+    return environment.defaultToastMessages.invalidUrl;
+  }
+
   public  getDocumentsBaseRoot(): string {
     let path = '';
     const hasVersioning = this.config.enableVersioning;
@@ -261,10 +279,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   public isTabActive(index: number): boolean {
     return index === this.tabIndex;
   }
-  private get invalidUrlMessage() {
-    return ((this.config) && (this.config['invalidUrl'])) ? this.config['invalidUrl'] : environment.defaultToastMessages.invalidUrl;
-  }
-
   get isScreenSmall(): boolean {
     return this.mediaMatcher.matches;
   }
@@ -286,7 +300,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       && this.languageOptions.items
       && this.languageOptions.items.length !== 0);
   }
-
   get showOptionsBar(): boolean {
     return this.showLanguageOptions || this.showVersionOptions;
   }

@@ -13,7 +13,7 @@
   <div *ngIf="folders.length && links.length" class="spacer"></div>
 
   <div *ngFor="let i of links">
-    <a [routerLink]="[i.relativeLink]" [queryParams]="getQueryParams" queryParamsHandling="merge" class="file-link">
+    <a [routerLink]="[i.relativeLink]" [queryParams]="getQueryParams"  queryParamsHandling="merge" skipLocationChange="true" class="file-link">
       <div class="leaf">
           <mat-icon>{{getFileIcon(i.relativeLink)}}</mat-icon>
           <span>{{i.name}}</span>
