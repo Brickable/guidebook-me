@@ -27,31 +27,6 @@ export class RepoService {
       catchError(error => throwError(error))
     );
   }
-<<<<<<< HEAD
-
-  public getSiteContent() {
-    return this.getSha().pipe(
-      mergeMap(repoSha => this.getTree()),
-      mergeMap(tree => {
-        const configFile = tree.find(x => x.path === environment.configFileRoot);
-        const dictionaire = tree.find(x => x.path === environment.dictionaireRoot);
-        return forkJoin(
-          this.http.get(configFile.url),
-          this.http.get(dictionaire.url),
-          (config, dic) => {
-            const flatTree = tree
-              .filter(x => x.path.startsWith(environment.markdownRoot))
-              .map(x => new TreeNode(x.path, x.type, x.sha, x.url));
-            return {
-              configFile: JSON.parse(Base64.decode(config['content'])),
-              dictionaire: this.csvToJson(Base64.decode(dic['content'])),
-              tree: this.getHierarchizedRawTree(flatTree) };
-          });
-      }));
-  }
-
-=======
->>>>>>> develop
   private getHierarchizedRawTree(flatTree: TreeNode[]) {
     flatTree.forEach(node => {
       const subTree = flatTree.filter(x => (x.pathLevels === (node['pathLevels'] as number + 1)) && x.path.includes(node.path));
@@ -66,18 +41,6 @@ export class RepoService {
       mergeMap(repoSha => this.getTree()),
       mergeMap(tree => {
         const configFile = tree.find(x => x.path === environment.configFileRoot);
-<<<<<<< HEAD
-        return  this.http.get(configFile.url);
-      }),
-      map(file => JSON.parse(atob(file['content']))),
-      catchError(error =>  throwError(error))
-    );
-  }
-
-
-
-  getFile(url: string) {
-=======
         const dictionaire = tree.find(x => x.path === environment.dictionaireRoot);
         return forkJoin(
           this.http.get(configFile.url),
@@ -95,56 +58,28 @@ export class RepoService {
       }));
   }
   public getFile(url: string) {
->>>>>>> develop
     return this.http.get(url).pipe(
       map(file => Base64.decode(file['content']))
     );
   }
 
-<<<<<<< HEAD
-  private csvToJson(csv: string ) {
-    const lines = csv.split('\n');
-    let result = [];
-    let headers = lines[0].split(',');
-=======
   // HELPERS
   private csvToJson(csv: string) {
     const lines = csv.split('\n');
     let result = [];
     let headers = lines[0].split(environment.csvColumnSeperator);
->>>>>>> develop
     lines.shift();
     lines.pop();
 
     for (let i = 0; i < lines.length; i++) {
       let obj = new Object();
-<<<<<<< HEAD
-      const currentline = lines[i].split(',');
-=======
       const delimiter = ',';
       const currentline = lines[i].split(delimiter);
->>>>>>> develop
       for (let j = 0; j < headers.length; j++) {
         obj[headers[j]] = currentline[j];
       }
       result.push(obj);
     }
-<<<<<<< HEAD
-    console.log(result);
     return result;
   }
-
-  // public handleError(error: Response) {
-  //   if (error.status === 400) {
-  //     return Observable.throw(new BadInput(error.json()));
-  //   }
-  //   if (error.status === 404) {
-  //     return Observable.throw(new NotFoundError());
-  //   }
-  //   return Observable.throw(new AppError(error));
-  // }
-=======
-    return result;
-  }
->>>>>>> develop
 }

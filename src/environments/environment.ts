@@ -6,11 +6,6 @@ export const environment = {
   markdownRoot: 'markdown',
   configFileRoot: 'config.json',
   dictionaireRoot: 'dictionaire.csv',
-<<<<<<< HEAD
-  dictionaireKeyName: 'key',
-  useDictionaire: true,
-  useUnderscoreToSpaceConvention: true,
-=======
   csvColumnSeperator: ',',
   dictionaireKeyName: 'key',
 
@@ -25,17 +20,10 @@ export const environment = {
   KeyForLanguageDictionaire: 'language',
   keyForVersionDictionaire: 'version',
 
->>>>>>> develop
   toastSettings: {
     timeOut: 3000,
     easing: 'ease-in',
     positionClass: 'toast-top-center',
-<<<<<<< HEAD
-    easeTime : 500
-  },
-  defaultToastMessages: {
-    invalidUrl: 'The provided url has no match on selected version/language. System redirected you to the version root page.',
-=======
     easeTime: 500
   },
   useUnderscoreToSpaceConvention: true,
@@ -43,6 +31,5 @@ export const environment = {
     language: 'language',
     version: 'version',
     invalidUrlMsg: 'The provided url has no match on selected version/language. System redirected you to the version root page.',
->>>>>>> develop
   }
 };

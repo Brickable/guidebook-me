@@ -17,10 +17,7 @@ import { Config } from '../../models/Config';
 import { OptionItem } from '../../models/OptionItem';
 import { TreeNode } from '../../models/TreeNode';
 import { ToastrService } from 'ngx-toastr';
-<<<<<<< HEAD
-=======
 import { Title } from '@angular/platform-browser';
->>>>>>> develop
 
 
 const SMALL_WIDTH_BREAKPOINT = 959;
@@ -59,24 +56,17 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   tabIndex = 0;
 
   constructor(private repoService: RepoService, private router: Router, private route: ActivatedRoute,
-<<<<<<< HEAD
-    zone: NgZone, private toast: ToastrService) {
-=======
     zone: NgZone, private toast: ToastrService, private titleService: Title ) {
->>>>>>> develop
       this.mediaMatcher.addListener(mql => zone.run(() => (this.mediaMatcher = mql)));
   }
 
   ngOnInit(): void {
     this.subscribeSiteContentObs();
-<<<<<<< HEAD
-=======
     this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) {
         console.log(val);
       }
   });
->>>>>>> develop
   }
   ngOnDestroy(): void {
     this.siteContent$.unsubscribe();
@@ -144,13 +134,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         this.setCurrentNode(this.currentVersion, this.getRelativePathByUrl(), true);
         this.refreshPageSource();
         this.currentTreeView = this.getTreeView();
-<<<<<<< HEAD
-      }
-    }  catch (e) {
-      this.toast.warning(this.invalidUrlMessage, undefined, environment.toastSettings );
-      this.router.navigate(['/'], { queryParams: this.queryParamsObj });
-    }
-=======
         this.setTitle();
       }
     }  catch (e) {
@@ -160,7 +143,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
   private setTitle() {
     this.titleService.setTitle(this.currentNode.files[this.tabIndex].name);
->>>>>>> develop
   }
   private refreshPageSource(): void {
     this.subscribePageSourceObs();
@@ -187,11 +169,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
     this.currentVersion = this.findNode(this.tree, path);
     if (!this.currentVersion) {
-<<<<<<< HEAD
-      this.toast.warning(this.invalidUrlMessage, undefined, environment.toastSettings );
-=======
       this.toast.warning(this.getTranslation(environment.keyForInvalidUrlMessageDictionaire), undefined, environment.toastSettings );
->>>>>>> develop
       this.router.navigate(['/']);
     }
   }
@@ -222,28 +200,14 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
 
   // QUERIES
-<<<<<<< HEAD
-  private getTranslation(keyVal: string) {
-    const dicItem = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLocaleLowerCase() === keyVal.toLocaleLowerCase());
-    return (dicItem) ? dicItem[this.languageOptions.selected] : '';
-  }
-  private getNameByusedConventions(text: string): string {
-    if (environment.useDictionaire) {
-=======
   private getNameByusedConventions(text: string): string {
     if (this.config[environment.keyForEnableDictionaires]) {
->>>>>>> develop
       const match = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLowerCase() === text.toLowerCase());
       if (match) {
         return match[this.languageOptions.selected];
       }
     }
-<<<<<<< HEAD
-    return (environment.useUnderscoreToSpaceConvention) ?
-      text.split('_').join(' ').replace ('.md', '') : text;
-=======
     return (environment.useUnderscoreToSpaceConvention) ? text.split('_').join(' ').replace ('.md', '') : text;
->>>>>>> develop
   }
   private getTreeView(node: TreeNode = this.currentVersion): TreeNode[] {
     const treeView: TreeNode[] = [];
@@ -310,9 +274,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   public isTabActive(index: number): boolean {
     return index === this.tabIndex;
   }
-  private get invalidUrlMessage() {
-    return ((this.config) && (this.config['invalidUrl'])) ? this.config['invalidUrl'] : environment.defaultToastMessages.invalidUrl;
-  }
 
   get isScreenSmall(): boolean {
     return this.mediaMatcher.matches;
@@ -341,13 +302,10 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   get getQueryParams(): object  {
     return this.queryParamsObj;
   }
-<<<<<<< HEAD
-=======
   get languageTranslation() {
     return this.getTranslation(environment.KeyForLanguageDictionaire);
   }
   get versionTranslation() {
     return this.getTranslation(environment.keyForVersionDictionaire);
   }
->>>>>>> develop
 }
