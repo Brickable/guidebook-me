@@ -250,8 +250,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     if ((this.dictionaire || this.config)) {
       const dicItem = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLocaleLowerCase() === keyVal.toLocaleLowerCase());
       translation = (dicItem) ? dicItem[this.languageOptions.selected] : translation;
-    }
-    else {
+    } else {
       translation = (environment.defaultTranslations[keyVal]) ? environment.defaultTranslations[keyVal] : translation;
     }
     return translation;
