@@ -274,6 +274,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   public isTabActive(index: number): boolean {
     return index === this.tabIndex;
   }
+
   get isScreenSmall(): boolean {
     return this.mediaMatcher.matches;
   }
