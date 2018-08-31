@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MaterialModule } from './common/material.module';
 import { RouterModule } from '@angular/router';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { Title } from '@angular/platform-browser';
 
 
 import { AppComponent } from './app.component';
@@ -42,7 +43,8 @@ import { ToastrModule } from 'ngx-toastr';
     })
   ],
   providers: [
-    RepoService
+    RepoService,
+    Title
   ],
   bootstrap: [AppComponent]
 })

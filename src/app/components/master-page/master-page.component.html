@@ -6,11 +6,16 @@
             <mat-icon (click)="sNav.first.toggle()">menu</mat-icon>
           </i>
       </div>
-      <a href="/" class="archor-logo" fxFlex fxLayout>
-        <img src="assets/logo.svg" alt="" height="30px" style="padding-right: 10px;">
-        &nbsp;API
-      </a>
 
+      <div>
+        <!-- [TWEAKING POINT] - change the element according to your app context -->
+        <a href="/" class="archor-logo" fxFlex fxLayout>
+          <div>
+            <span></span>
+            Guidebook<i class="secondary-color">me</i>
+          </div>
+        </a>
+      </div>
 
 
       <div *ngIf="showOptionsBar" id="language-options" fxFlex fxLayout fxLayoutAlign="flex-end">
@@ -18,7 +23,11 @@
           <li *ngIf="showLanguageOptions">
             <button fxHide.lt-md mat-button [matMenuTriggerFor]="languagemenu" matTooltip="Choose language">
               <mat-icon>more_vert</mat-icon>
+<<<<<<< HEAD
               <span>Language
+=======
+              <span>{{languageTranslation}}
+>>>>>>> develop
                 <small>({{languageOptions.selectedName}})</small>
               </span>
             </button>
@@ -34,7 +43,11 @@
           <li *ngIf="showVersionOptions">
             <button fxHide.lt-md mat-button [matMenuTriggerFor]="versionmenu" matTooltip="Choose version">
               <mat-icon>more_vert</mat-icon>
+<<<<<<< HEAD
               <span>Version
+=======
+              <span>{{versionTranslation}}
+>>>>>>> develop
                 <small>({{versionOptions.selectedName}})</small>
               </span>
             </button>
