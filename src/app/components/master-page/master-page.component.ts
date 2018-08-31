@@ -4,12 +4,11 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  NgZone,
   ViewChildren,
   QueryList,
 } from '@angular/core';
 
-import { take, map } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { MatSidenav } from '@angular/material';
 import { RepoService } from '../../services/repo.service';
@@ -18,9 +17,7 @@ import { OptionItem } from '../../models/OptionItem';
 import { TreeNode } from '../../models/TreeNode';
 import { ToastrService } from 'ngx-toastr';
 import { Title } from '@angular/platform-browser';
-
-
-const SMALL_WIDTH_BREAKPOINT = 959;
+import { BreakpointObserver, BreakpointState, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'master-page',
@@ -29,21 +26,16 @@ const SMALL_WIDTH_BREAKPOINT = 959;
 
 })
 export class MasterPageComponent implements OnInit, OnDestroy {
-  private mediaMatcher: MediaQueryList = matchMedia(
-    `(max-width: ${SMALL_WIDTH_BREAKPOINT}px)`
-  );
   @ViewChildren('sidenav') sNav: QueryList<MatSidenav>;
   private siteContent$;
   private pageSource$;
-  private routerListener$;
   private routeQueryParams$;
   private routeUrl$;
+  private webBreakpoints$;
 
   private config: Config;
   private tree: TreeNode;
   private queryParamsObj = {};
-  private versionQueryParamKey = 'v';
-  private languageQueryParamKey = 'lang';
   private currentUrl = '';
   private dictionaire = [];
 
@@ -54,25 +46,25 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   versionOptions: OptionList = new OptionList();
   languageOptions: OptionList = new OptionList();
   tabIndex = 0;
+  isMobile = false;
 
-  constructor(private repoService: RepoService, private router: Router, private route: ActivatedRoute,
-    zone: NgZone, private toast: ToastrService, private titleService: Title ) {
-      this.mediaMatcher.addListener(mql => zone.run(() => (this.mediaMatcher = mql)));
-  }
+  constructor(
+    private repoService: RepoService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private toast: ToastrService,
+    private titleService: Title,
+    private breakpointObserver: BreakpointObserver ) {}
 
   ngOnInit(): void {
+    this.subscribeWebBreakpointsObs();
     this.subscribeSiteContentObs();
-    this.router.events.subscribe((val) => {
-      if (val instanceof NavigationEnd) {
-        console.log(val);
-      }
-  });
   }
   ngOnDestroy(): void {
     this.siteContent$.unsubscribe();
-    this.routerListener$.unsubscribe();
     this.routeQueryParams$.unsubscribe();
     this.routeUrl$.unsubscribe();
+    this.webBreakpoints$.unsubscribe();
   }
 
   // EVENTS
@@ -80,21 +72,21 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     this.selectTab(tabIndex);
   }
   public onSelectingVersion(value): void {
-    this.updateQueryParams(this.versionQueryParamKey, value);
+    this.updateQueryParams(environment.queryParamValueVersion, value);
     this.router.navigate([`${this.currentUrl}`], { queryParams: this.queryParamsObj });
   }
   public onSelectingLanguage(value): void {
-    this.updateQueryParams(this.languageQueryParamKey, value);
+    this.updateQueryParams(environment.queryParamValueLanguage, value);
     this.router.navigate([`${this.currentUrl}`], { queryParams: this.queryParamsObj });
   }
 
-  ////  Subscribe observables
+  // SUBSCRIPTIONS
   private subscribeRouteQueryParamsObs(): void {
     const _this = this;
     this.routeQueryParams$ = this.route.queryParams.subscribe(x => {
       _this.queryParamsObj = x;
-      const version = (x[_this.versionQueryParamKey]) ? x[_this.versionQueryParamKey] : _this.config.defaultVersion;
-      const language = (x[_this.languageQueryParamKey]) ? x[_this.languageQueryParamKey] : _this.config.defaultLanguage;
+      const version = (x[environment.queryParamValueVersion]) ? x[environment.queryParamValueVersion] : _this.config.defaultVersion;
+      const language = (x[environment.queryParamValueLanguage]) ? x[environment.queryParamValueLanguage] : _this.config.defaultLanguage;
       _this.setLanguageOptions(language);
       _this.setVersionOptions(version);
       _this.setCurrentVersion();
@@ -126,6 +118,13 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         this.subscribeRouteQueryParamsObs();
       });
   }
+  private subscribeWebBreakpointsObs(): void {
+    this.webBreakpoints$ = this.breakpointObserver.observe([Breakpoints.Web])
+    .subscribe(
+      (result: BreakpointState) => {
+        this.isMobile = !result.matches;
+    });
+  }
 
   // COMMANDS
   private load(): void {
@@ -141,7 +140,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
       this.router.navigate(['/'], { queryParams: this.queryParamsObj });
     }
   }
-  private setTitle() {
+  private setTitle(): void {
     this.titleService.setTitle(this.currentNode.files[this.tabIndex].name);
   }
   private refreshPageSource(): void {
@@ -178,7 +177,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     if (this.config.enableVersioning) {
       this.versionOptions.selected = version;
       this.config.versions.forEach(element => {
-        const item = new OptionItem(element, this.getNameByusedConventions(element));
+        const item = new OptionItem(element, this.getTranslation(element));
         this.versionOptions.items.push(item);
       });
     }
@@ -188,7 +187,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     if (this.config.enableMultiLanguage) {
       this.languageOptions.selected = language;
       this.config.languages.forEach(element => {
-        const item = new OptionItem(element, this.getNameByusedConventions(element));
+        const item = new OptionItem(element, this.getTranslation(element));
         this.languageOptions.items.push(item);
       });
     }
@@ -200,15 +199,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
 
   // QUERIES
-  private getNameByusedConventions(text: string): string {
-    if (this.config[environment.keyForEnableDictionaires]) {
-      const match = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLowerCase() === text.toLowerCase());
-      if (match) {
-        return match[this.languageOptions.selected];
-      }
-    }
-    return (environment.useUnderscoreToSpaceConvention) ? text.split('_').join(' ').replace ('.md', '') : text;
-  }
+
   private getTreeView(node: TreeNode = this.currentVersion): TreeNode[] {
     const treeView: TreeNode[] = [];
     node.folders.forEach(element => {
@@ -253,8 +244,11 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     } else {
       translation = (environment.defaultTranslations[keyVal]) ? environment.defaultTranslations[keyVal] : translation;
     }
+    translation = (environment.useUnderscoreToSpaceConvention && translation) ?
+      translation.split('_').join(' ').replace ('.md', '') : translation;
     return translation;
   }
+
   public  getDocumentsBaseRoot(): string {
     let path = '';
     const hasVersioning = this.config.enableVersioning;
@@ -275,9 +269,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     return index === this.tabIndex;
   }
 
-  get isScreenSmall(): boolean {
-    return this.mediaMatcher.matches;
-  }
   get getCurrentNodeDocuments(): TreeNode[] {
     return this.currentNode.nodes.filter(x => x.isFile);
   }

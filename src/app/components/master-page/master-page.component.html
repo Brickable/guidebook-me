@@ -2,7 +2,7 @@
   <nav class="navbar-header-primary-container">
     <mat-toolbar class="navbar navbar-primary mat-elevation-z10" color="primary">
       <div>
-          <i class="hamburger icon-pr" fxFlex fxLayout>
+          <i class="hamburger pr-20" fxFlex fxLayout>
             <mat-icon (click)="sNav.first.toggle()">menu</mat-icon>
           </i>
       </div>
@@ -10,25 +10,21 @@
       <div>
         <!-- [TWEAKING POINT] - change the element according to your app context -->
         <a href="/" class="archor-logo" fxFlex fxLayout>
-          <div>
-            <span></span>
-            Guidebook<i class="secondary-color">me</i>
-          </div>
+            <div id="home-page-link">
+              <span>Guide</span> <i class="secondary-color">mebook</i>
+            </div>
         </a>
       </div>
 
 
       <div *ngIf="showOptionsBar" id="language-options" fxFlex fxLayout fxLayoutAlign="flex-end">
-        <ul fxLayout fxLayoutGap="10px" class="navigation-items">
+        <ul fxLayout  class="navigation-items">
           <li *ngIf="showLanguageOptions">
-            <button fxHide.lt-md mat-button [matMenuTriggerFor]="languagemenu" matTooltip="Choose language">
-              <mat-icon>more_vert</mat-icon>
-              <span>{{languageTranslation}}
+            <button mat-button [matMenuTriggerFor]="languagemenu" matTooltip="Choose language">
+              <mat-icon>language</mat-icon>
+              <span *ngIf="!isMobile" class="pl-5">{{languageTranslation}}
                 <small>({{languageOptions.selectedName}})</small>
               </span>
-            </button>
-            <button matTooltip="Select Language" fxHide.gt-sm mat-icon-button [matMenuTriggerFor]="languagemenu">
-              <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #languagemenu="matMenu">
               <button mat-menu-item *ngFor="let lang of languageOptions.items" (click)="onSelectingLanguage(lang.value)">
@@ -37,14 +33,11 @@
             </mat-menu>
           </li>
           <li *ngIf="showVersionOptions">
-            <button fxHide.lt-md mat-button [matMenuTriggerFor]="versionmenu" matTooltip="Choose version">
-              <mat-icon>more_vert</mat-icon>
-              <span>{{versionTranslation}}
+            <button mat-button [matMenuTriggerFor]="versionmenu" matTooltip="Choose version">
+              <mat-icon>layers</mat-icon>
+              <span *ngIf="!isMobile" class="pl-5">{{versionTranslation}}
                 <small>({{versionOptions.selectedName}})</small>
               </span>
-            </button>
-            <button matTooltip="Select version" fxHide.gt-sm mat-icon-button [matMenuTriggerFor]="versionmenu">
-              <mat-icon>more_vert</mat-icon>
             </button>
             <mat-menu #versionmenu="matMenu">
               <button mat-menu-item *ngFor="let version of versionOptions.items" (click)="onSelectingVersion(version.value)">
@@ -61,7 +54,7 @@
 
 <section class="middle" *ngIf="currentNode">
   <mat-drawer-container class="container">
-    <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isScreenSmall" [mode]="isScreenSmall ? 'over' : 'side'">
+    <mat-drawer #sidenav role="navigation" class="left-sidebar mat-elevation-z8" [opened]="!isMobile" [mode]="isMobile ? 'over' : 'side'">
       <mat-accordion>
           <folder-tree [items]="currentTreeView" [tabIndex]="tabIndex" [treeLevel]="0" [baseRoot]="getDocumentsBaseRoot()" [queryParams]="getQueryParams"></folder-tree>
       </mat-accordion>
@@ -69,7 +62,7 @@
     <mat-drawer-content>
       <main class="content">
         <mat-tab-group (selectedTabChange)="onSelectingTab($event.index)" [selectedIndex]="tabIndex">
-          <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="getNameByusedConventions(item.name)">
+          <mat-tab *ngFor="let item of getCurrentNodeDocuments" [label]="getTranslation(item.rawNameWithoutFileExtension)">
             <main-content [currentMarkdown]="currentDocumentContent" ></main-content>
           </mat-tab>
         </mat-tab-group>

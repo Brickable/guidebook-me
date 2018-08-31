@@ -145,6 +145,10 @@ section.middle {
 main.content {
    padding: 18px 40px;
 }
+button.mat-button {
+  min-width: 24px;
+  padding: 0 10px 0 10px;
+}
 mat-drawer-container, mat-drawer-content, mat-drawer {
   height:  100%;
 }
@@ -170,9 +174,13 @@ mat-drawer-container, mat-drawer-content, mat-drawer {
     color:#e78200;
   }
 }
-.icon-pr {
+.pr-20 {
   display: inline-block;
   padding-right:20px;
+}
+.pl-5 {
+  display: inline-block;
+  padding-left:5px;
 }
 .capitalize {
   text-transform: capitalize;
@@ -187,6 +195,10 @@ mat-drawer-container, mat-drawer-content, mat-drawer {
   color: $secondaryColor;
   font-weight: bolder;
 }
+#home-page-link:hover >* {
+  color: $secondaryHoverColor !important;
+}
+
 
 // Toastr alerts customization
 .toast {

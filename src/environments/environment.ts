@@ -8,6 +8,8 @@ export const environment = {
   dictionaireRoot: 'dictionaire.csv',
   csvColumnSeperator: ',',
   dictionaireKeyName: 'key',
+  queryParamValueVersion: 'v',
+  queryParamValueLanguage: 'lang',
 
   keyForEnableMultiLanguage: 'enableMultiLanguage',
   keyForEnableVersion: 'enableVersioning',

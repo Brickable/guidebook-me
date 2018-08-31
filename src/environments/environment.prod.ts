@@ -1,5 +1,5 @@
 export const environment = {
-  production: false,
+  production: true,
   repoUrl: 'https://api.github.com/repos/Brickable/API-DOC-MarkdownDocumentation', // [TWEAKING POINT] - change var to your repository.
   branch: 'AllowLanguageBranch', // [TWEAKING POINT] - change var to repository branch name you want to target.
 
@@ -8,6 +8,8 @@ export const environment = {
   dictionaireRoot: 'dictionaire.csv',
   csvColumnSeperator: ',',
   dictionaireKeyName: 'key',
+  queryParamValueVersion: 'v',
+  queryParamValueLanguage: 'lang',
 
   keyForEnableMultiLanguage: 'enableMultiLanguage',
   keyForEnableVersion: 'enableVersioning',
@@ -33,4 +35,3 @@ export const environment = {
     invalidUrlMsg: 'The provided url has no match on selected version/language. System redirected you to the version root page.',
   }
 };
-
