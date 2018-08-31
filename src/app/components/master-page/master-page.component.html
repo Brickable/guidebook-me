@@ -6,13 +6,14 @@
             <mat-icon (click)="sNav.first.toggle()">menu</mat-icon>
           </i>
       </div>
+
       <div>
+        <!-- [TWEAKING POINT] - change the element according to your app context -->
         <a href="/" class="archor-logo" fxFlex fxLayout>
           <div>
-            <span class="helper"></span>
+            <span></span>
             Guidebook<i class="secondary-color">me</i>
           </div>
-
         </a>
       </div>
 
@@ -22,7 +23,7 @@
           <li *ngIf="showLanguageOptions">
             <button fxHide.lt-md mat-button [matMenuTriggerFor]="languagemenu" matTooltip="Choose language">
               <mat-icon>more_vert</mat-icon>
-              <span>Language
+              <span>{{languageTranslation}}
                 <small>({{languageOptions.selectedName}})</small>
               </span>
             </button>
@@ -38,7 +39,7 @@
           <li *ngIf="showVersionOptions">
             <button fxHide.lt-md mat-button [matMenuTriggerFor]="versionmenu" matTooltip="Choose version">
               <mat-icon>more_vert</mat-icon>
-              <span>Version
+              <span>{{versionTranslation}}
                 <small>({{versionOptions.selectedName}})</small>
               </span>
             </button>

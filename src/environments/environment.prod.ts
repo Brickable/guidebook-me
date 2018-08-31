@@ -1,7 +1,7 @@
 export const environment = {
-  production: true,
-  repoUrl: 'https://api.github.com/repos/Brickable/API-DOC-MarkdownDocumentation',
-  branch: 'AllowLanguageBranch',
+  production: false,
+  repoUrl: 'https://api.github.com/repos/Brickable/API-DOC-MarkdownDocumentation', // [TWEAKING POINT] - change var to your repository.
+  branch: 'AllowLanguageBranch', // [TWEAKING POINT] - change var to repository branch name you want to target.
 
   markdownRoot: 'markdown',
   configFileRoot: 'config.json',
@@ -17,6 +17,8 @@ export const environment = {
   keyForVersions: 'versions',
   keyForLanguages: 'languages',
   keyForInvalidUrlMessageDictionaire: 'invalidUrlMsg',
+  KeyForLanguageDictionaire: 'language',
+  keyForVersionDictionaire: 'version',
 
   toastSettings: {
     timeOut: 3000,
@@ -25,7 +27,10 @@ export const environment = {
     easeTime: 500
   },
   useUnderscoreToSpaceConvention: true,
-  defaultToastMessages: {
-    invalidUrl: '...The provided url has no match on selected version/language. System redirected you to the version root page.',
+  defaultTranslations: {
+    language: 'language',
+    version: 'version',
+    invalidUrlMsg: 'The provided url has no match on selected version/language. System redirected you to the version root page.',
   }
 };
+

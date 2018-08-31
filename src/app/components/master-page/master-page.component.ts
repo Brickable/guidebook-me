@@ -1,4 +1,3 @@
-
 import { OptionList } from './../../models/OptionList';
 import { environment } from './../../../environments/environment';
 import {
@@ -138,7 +137,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
         this.setTitle();
       }
     }  catch (e) {
-      this.toast.warning(this.getInvalidUrlMessage(), undefined, environment.toastSettings );
+      this.toast.warning(this.getTranslation(environment.keyForInvalidUrlMessageDictionaire), undefined, environment.toastSettings );
       this.router.navigate(['/'], { queryParams: this.queryParamsObj });
     }
   }
@@ -170,7 +169,7 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     }
     this.currentVersion = this.findNode(this.tree, path);
     if (!this.currentVersion) {
-      this.toast.warning(this.getInvalidUrlMessage(), undefined, environment.toastSettings );
+      this.toast.warning(this.getTranslation(environment.keyForInvalidUrlMessageDictionaire), undefined, environment.toastSettings );
       this.router.navigate(['/']);
     }
   }
@@ -201,10 +200,6 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
 
   // QUERIES
-  private getTranslation(keyVal: string) {
-    const dicItem = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLocaleLowerCase() === keyVal.toLocaleLowerCase());
-    return (dicItem) ? dicItem[this.languageOptions.selected] : '';
-  }
   private getNameByusedConventions(text: string): string {
     if (this.config[environment.keyForEnableDictionaires]) {
       const match = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLowerCase() === text.toLowerCase());
@@ -250,16 +245,17 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     return (this.currentUrl.toLowerCase().endsWith('.md')) ?
       this.currentUrl.substring(this.currentUrl.lastIndexOf('/') + 1) : '';
   }
-  private getInvalidUrlMessage() {
-    if ((this.dictionaire || this.config)
-        && (this.getTranslation(environment.keyForInvalidUrlMessageDictionaire))
-        && this.config[environment.keyForEnableDictionaires]) {
-          const msg = this.getTranslation(environment.keyForInvalidUrlMessageDictionaire);
-          return (msg) ? msg : environment.defaultToastMessages.invalidUrl;
+  public getTranslation(keyVal: string) {
+    let translation = '';
+    if ((this.dictionaire || this.config)) {
+      const dicItem = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLocaleLowerCase() === keyVal.toLocaleLowerCase());
+      translation = (dicItem) ? dicItem[this.languageOptions.selected] : translation;
     }
-    return environment.defaultToastMessages.invalidUrl;
+    else {
+      translation = (environment.defaultTranslations[keyVal]) ? environment.defaultTranslations[keyVal] : translation;
+    }
+    return translation;
   }
-
   public  getDocumentsBaseRoot(): string {
     let path = '';
     const hasVersioning = this.config.enableVersioning;
@@ -305,5 +301,11 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
   get getQueryParams(): object  {
     return this.queryParamsObj;
+  }
+  get languageTranslation() {
+    return this.getTranslation(environment.KeyForLanguageDictionaire);
+  }
+  get versionTranslation() {
+    return this.getTranslation(environment.keyForVersionDictionaire);
   }
 }
