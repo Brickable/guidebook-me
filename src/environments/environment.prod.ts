@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   repoUrl: 'https://api.github.com/repos/Brickable/Guidebookme-MarkdownDocumentation', // [TWEAKING POINT] - change var to your repository.
-  branch: 'master', // [TWEAKING POINT] - change var to repository branch name you want to target.
+  branch: 'AllowVersioningLanguageAndDictionaire', // [TWEAKING POINT] - change var to repository branch name you want to target.
 
   markdownRoot: 'markdown',
   configFileRoot: 'config.json',
