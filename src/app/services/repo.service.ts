@@ -2,12 +2,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '../../../node_modules/@angular/common/http';
 
-import { Observable, of, throwError, forkJoin } from 'rxjs';
+import { Observable, throwError, forkJoin } from 'rxjs';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { TreeNode } from '../models/TreeNode';
 import { Base64 } from 'js-base64';
+
+
 
 
 @Injectable({
@@ -34,6 +36,18 @@ export class RepoService {
     });
     return flatTree.find(x => x.pathLevels === 1);
   }
+  private generateSiteContent(tree, config, dic) {
+    const flatTree = tree
+      .filter(x => x.path.startsWith(environment.markdownRoot))
+      .map(x => new TreeNode(x.path, x.type, x.sha, x.url));
+    const configFile = JSON.parse(Base64.decode(config['content']));
+    const dictionaire = (dic) ? this.csvToJson(Base64.decode(dic['content'])) : undefined;
+    return {
+      configFile: configFile,
+      dictionaire: dictionaire,
+      tree: this.getHierarchizedRawTree(flatTree)
+    };
+  }
 
   //  PUBLIC SERVICES
   public getSiteContent() {
@@ -42,21 +56,16 @@ export class RepoService {
       mergeMap(tree => {
         const configFile = tree.find(x => x.path === environment.configFileRoot);
         const dictionaire = tree.find(x => x.path === environment.dictionaireRoot);
-        return forkJoin(
-          this.http.get(configFile.url),
-          this.http.get(dictionaire.url),
-          (config, dic) => {
-            const flatTree = tree
-              .filter(x => x.path.startsWith(environment.markdownRoot))
-              .map(x => new TreeNode(x.path, x.type, x.sha, x.url));
-            return {
-              configFile: JSON.parse(Base64.decode(config['content'])),
-              dictionaire: this.csvToJson(Base64.decode(dic['content'])),
-              tree: this.getHierarchizedRawTree(flatTree)
-            };
-          });
-      }));
+        const configFileObs = this.http.get(configFile.url);
+        const dictionaireObs = (dictionaire) ? this.http.get(dictionaire.url) : undefined;
+
+        return (dictionaireObs) ?
+          forkJoin(configFileObs, dictionaireObs, (config, dic) => this.generateSiteContent(tree, config, dic)) :
+          forkJoin(configFileObs, config => this.generateSiteContent(tree, config, undefined));
+      }),
+    );
   }
+
   public getFile(url: string) {
     return this.http.get(url).pipe(
       map(file => Base64.decode(file['content']))

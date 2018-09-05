@@ -1,5 +1,5 @@
 {
-  "name": "guide-me-book",
+  "name": "guidebook-me",
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
@@ -11,12 +11,12 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^6.1.2",
-    "@angular/cdk": "^6.4.3",
+    "@angular/animations": "^6.1.6",
+    "@angular/cdk": "^6.4.7",
     "@angular/common": "^6.1.6",
     "@angular/compiler": "^6.1.6",
     "@angular/core": "^6.1.6",
-    "@angular/flex-layout": "^6.0.0-beta.17",
+    "@angular/flex-layout": "^6.0.0-beta.18",
     "@angular/forms": "^6.1.6",
     "@angular/http": "^6.1.6",
     "@angular/material": "^6.4.7",
@@ -25,12 +25,12 @@
     "@angular/router": "^6.1.6",
     "core-js": "^2.5.7",
     "hammerjs": "^2.0.8",
-    "js-base64": "^2.4.8",
+    "js-base64": "^2.4.9",
     "ngx-fs": "0.0.1",
     "ngx-markdown": "^6.2.0",
     "ngx-toastr": "^9.0.2",
     "prismjs": "^1.15.0",
-    "rxjs": "^6.3.0",
+    "rxjs": "^6.3.1",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {

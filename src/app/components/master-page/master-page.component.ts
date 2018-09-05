@@ -85,14 +85,15 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     const _this = this;
     this.routeQueryParams$ = this.route.queryParams.subscribe(x => {
       _this.queryParamsObj = x;
-      const version = (x[environment.queryParamValueVersion]) ? x[environment.queryParamValueVersion] : _this.config.defaultVersion;
-      const language = (x[environment.queryParamValueLanguage]) ? x[environment.queryParamValueLanguage] : _this.config.defaultLanguage;
+      const version = (this.checkIfVersionQueryParamIsValid()) ? x[environment.queryParamValueVersion] : _this.config.defaultVersion;
+      const language = (this.checkIfLanguageQueryParamIsValid()) ? x[environment.queryParamValueLanguage] : _this.config.defaultLanguage;
       _this.setLanguageOptions(language);
       _this.setVersionOptions(version);
       _this.setCurrentVersion();
       _this.load();
     });
   }
+
   private subscribeRouteUrlObs(): void {
     const _this = this;
     this.routeUrl$ = this.route.url.subscribe(
@@ -184,13 +185,23 @@ export class MasterPageComponent implements OnInit, OnDestroy {
   }
   private setLanguageOptions(language = this.config.defaultLanguage): void {
     this.languageOptions.items = [];
+    this.languageOptions.selected = this.getSelectedLanguage(language);
     if (this.config.enableMultiLanguage) {
-      this.languageOptions.selected = language;
       this.config.languages.forEach(element => {
         const item = new OptionItem(element, this.getTranslation(element));
         this.languageOptions.items.push(item);
       });
     }
+  }
+  private getSelectedLanguage(language) {
+    if (language) {
+      return language;
+    } else if (this.config.defaultLanguage) {
+      return this.config.defaultLanguage;
+    } else if (this.config.enableDictionaires) {
+      return Object.keys(this.dictionaire[0])[1]; // return property name of 2 column;
+    }
+    return '';
   }
   private updateQueryParams(key, value): void {
     let clone = Object.assign({}, this.queryParamsObj);
@@ -236,9 +247,23 @@ export class MasterPageComponent implements OnInit, OnDestroy {
     return (this.currentUrl.toLowerCase().endsWith('.md')) ?
       this.currentUrl.substring(this.currentUrl.lastIndexOf('/') + 1) : '';
   }
+  private checkIfVersionQueryParamIsValid(): boolean {
+    if (this.queryParamsObj === {} || this.queryParamsObj[environment.queryParamValueVersion] === undefined ) {
+      return true;
+    }
+    return (this.config.versions.find(x => x.toLowerCase() ===  this.queryParamsObj[environment.queryParamValueVersion].toLowerCase())) ?
+      true : false;
+  }
+  private checkIfLanguageQueryParamIsValid(): boolean {
+    if (this.queryParamsObj === {} || this.queryParamsObj[environment.queryParamValueLanguage] === undefined ) {
+      return true;
+    }
+    return (this.config.languages.find(x => x.toLowerCase() ===  this.queryParamsObj[environment.queryParamValueLanguage].toLowerCase())) ?
+    true : false;
+  }
   public getTranslation(keyVal: string) {
-    let translation = '';
-    if ((this.dictionaire || this.config)) {
+    let translation = keyVal;
+    if (this.dictionaire) {
       const dicItem = this.dictionaire.find(x => x[environment.dictionaireKeyName].toLocaleLowerCase() === keyVal.toLocaleLowerCase());
       translation = (dicItem) ? dicItem[this.languageOptions.selected] : translation;
     } else {

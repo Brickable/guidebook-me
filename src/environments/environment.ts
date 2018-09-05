@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
-  repoUrl: 'https://api.github.com/repos/Brickable/API-DOC-MarkdownDocumentation', // [TWEAKING POINT] - change var to your repository.
-  branch: 'AllowLanguageBranch', // [TWEAKING POINT] - change var to repository branch name you want to target.
+  repoUrl: 'https://api.github.com/repos/Brickable/Guidebookme-MarkdownDocumentation', // [TWEAKING POINT] - change var to your repository.
+  branch: 'AllowVersioningLanguageAndDictionaire', // [TWEAKING POINT] - change var to repository branch name you want to target.
 
   markdownRoot: 'markdown',
   configFileRoot: 'config.json',
@@ -18,6 +18,7 @@ export const environment = {
   keyForDefaultLanguage: 'defaultLanguage',
   keyForVersions: 'versions',
   keyForLanguages: 'languages',
+
   keyForInvalidUrlMessageDictionaire: 'invalidUrlMsg',
   KeyForLanguageDictionaire: 'language',
   keyForVersionDictionaire: 'version',
