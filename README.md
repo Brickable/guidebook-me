@@ -3,20 +3,20 @@
 
 ## Why?
 
-Are you a developer / technical writer tired to document you app guides in word or have crazy complex documentation content approval workflow? - You might want to take a look at this project.
+Are you a developer or a technical writer tired to document your app guides in word files or have crazy complex documentation content approval workflow? - You might want to take a look at this project.
 
 ## What?
 
 Guidebook me is a documentation site generator.
-This project prupose an easy way to document any content structured guide like a API's or software manual guide for instance,
-It allow Technical writers to update and manage documentation on a github repository without the need to rebuild or change the documentation site.
+This project prupose an easy way to document any content structured guide like an API's or a software manual guide for instance.
+It allow Technical writers to update and manage documentation on a github repository without the need of rebuild or change the documentation site.
 
 Guidebook me allows versioning documentation and multi language as well.
 
 ## How?
 - Create your Github repository for the documentation following convention based rules of this project.
-- Clone Guidebook me, reference your documentation repository and the rest of your so desired configurations and deploy it.
-- Keep updating your documentation repo.
+- Clone Guidebook me, reference your documentation repository, edit the rest of your so desired configurations and deploy it.
+- Keep updating your documentation repo :)
 
 ## Configurable properties
 
