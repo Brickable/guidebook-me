@@ -2,7 +2,7 @@
 # Guidebook me
 
 ## App Sample
-https://guidebookme.azurewebsites.net/
+https://guidebookme.azurewebsites.net/index.html
 
 ## Why?
 
