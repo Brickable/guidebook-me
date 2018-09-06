@@ -1,4 +1,4 @@
-![logo](http://oi65.tinypic.com/4szcdc.jpg)
+![logo](http://oi65.tinypic.com/10pydkh.jpg)
 # Guidebook me
 
 ## App Sample
