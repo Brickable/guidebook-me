@@ -1,6 +1,6 @@
 {
   "name": "guidebook-me",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -9,7 +9,6 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "postinstall": "npm run build"
-
   },
   "private": true,
   "dependencies": {
@@ -32,7 +31,7 @@
     "ngx-markdown": "^6.2.0",
     "ngx-toastr": "^9.0.2",
     "prismjs": "^1.15.0",
-    "rxjs": "^6.3.1",
+    "rxjs": "^6.3.2",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {

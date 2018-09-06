@@ -21,7 +21,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/markdown"
+              "src/web.config"
             ],
             "styles": [
               "src/main.scss",
@@ -91,7 +91,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/markdown"
+              "src/web.config"
             ]
           }
         },

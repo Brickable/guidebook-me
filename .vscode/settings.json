@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/177fb7a7-2e39-4981-9ec6-9f519e7321b5/resourceGroups/guidebook-me/providers/Microsoft.Web/sites/guidebookme",
+    "appService.deploySubpath": ""
+}
