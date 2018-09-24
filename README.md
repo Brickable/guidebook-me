@@ -6,14 +6,14 @@ https://guidebookme.azurewebsites.net/index.html
 
 ## Why?
 
-Technical writing is part of your job? Are you tired to document your Guides in word documents or have crazy complex documentation content approval workflow? - You might want to take a look at this project.
+Technical writing is part of your job? Are you tired to document your Guides in word documents or having crazy complex documentation content approval workflow? - You might want to take a look at this project.
 
 ## What?
 
 GuideMeBook is a documentation site generator.
 This project prupose an easy way to document any content structured guide (like an API's or a software manual guide for instance).
 It allow Technical writers to update and manage documentation on a github repository without the need of rebuild or change the documentation site.
-The basic idea behind is setting up a site based on this project, create a Github Repo for documentation, and manage all documentation worflow from this Git repo.
+The basic idea behind is setting up a site based on this project, create a Github Repo for documentation, and manage all documentation worflow from created Git repo.
 
 GuideMeBook allows versioning documentation and multi language as well.
 
