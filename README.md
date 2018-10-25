@@ -76,6 +76,7 @@ This repo intend to have a folder structure and configurations that match with g
 
 ## Future Developments
 - Testing the application
+- Implement Repo cache mechanism to overcome GitHub rate limit exceeded by IP address.
 - Provide searching capabilities feature
 - Provide authentication capabilities for access into private repositories
 - Provide the same services for Bitbucket.
